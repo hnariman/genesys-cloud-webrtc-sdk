@@ -19,11 +19,10 @@ import {
 } from '../types/interfaces';
 import { SessionTypes, SdkErrorTypes, JingleReasons, CommunicationStates } from '../types/enums';
 import { attachAudioMedia, logDeviceChange, createUniqueAudioMediaElement } from '../media/media-utils';
-import { requestApi, isSoftphoneJid, createAndEmitSdkError } from '../utils';
+import { requestApi, isSoftphoneJid, createAndEmitSdkError, HeadsetChangesQueue } from '../utils';
 import { ConversationUpdate } from '../conversations/conversation-update';
 import { GenesysCloudWebrtcSdk } from '..';
 import { SessionManager } from './session-manager';
-import { Session } from 'inspector';
 
 type SdkConversationEvents = 'added' | 'removed' | 'updated';
 
@@ -180,7 +179,7 @@ export default class SoftphoneSessionHandler extends BaseSessionHandler {
         if (isOutbound) {
           this.sdk.headset.outgoingCall({ conversationId });
         } else {
-          this.sdk.headset.setRinging({ conversationId, contactName: null }, !!this.lastEmittedSdkConversationEvent.current.length);
+          HeadsetChangesQueue.queueHeadsetChanges(() => this.sdk.headset.setRinging({ conversationId, contactName: null }, !!this.lastEmittedSdkConversationEvent.current.length));
         }
 
         /* only emit `pendingSession` if we already have an active session */
@@ -223,7 +222,7 @@ export default class SoftphoneSessionHandler extends BaseSessionHandler {
 
           // if this was an inbound call, the headset needs to move from ringing to answered
           if (!isOutbound) {
-            this.sdk.headset.answerIncomingCall(conversationId, false);
+            HeadsetChangesQueue.queueHeadsetChanges(() => this.sdk.headset.answerIncomingCall(conversationId, false));
           }
 
           /* only emit `sessionStarted` if we have an active session */
@@ -244,6 +243,7 @@ export default class SoftphoneSessionHandler extends BaseSessionHandler {
         if (this.isPendingState(previousCallState) && !isOutbound) {
           this.sdk.headset.rejectIncomingCall(conversationId);
         } else {
+          HeadsetChangesQueue.clearQueue();
           this.sdk.headset.endCurrentCall(conversationId);
         }
 
