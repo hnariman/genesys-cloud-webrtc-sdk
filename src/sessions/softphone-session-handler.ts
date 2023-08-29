@@ -179,7 +179,10 @@ export default class SoftphoneSessionHandler extends BaseSessionHandler {
         if (isOutbound) {
           this.sdk.headset.outgoingCall({ conversationId });
         } else {
-          HeadsetChangesQueue.queueHeadsetChanges(() => this.sdk.headset.setRinging({ conversationId, contactName: null }, !!this.lastEmittedSdkConversationEvent.current.length));
+          this.log('info', 'about to start setRinging');
+          HeadsetChangesQueue.queueHeadsetChanges(() => this.sdk.headset.setRinging({ conversationId, contactName: null }, !!this.lastEmittedSdkConversationEvent.current.length).then(() => {
+            this.log('info', 'setRinging has resolved')
+          }));
         }
 
         /* only emit `pendingSession` if we already have an active session */
@@ -222,7 +225,10 @@ export default class SoftphoneSessionHandler extends BaseSessionHandler {
 
           // if this was an inbound call, the headset needs to move from ringing to answered
           if (!isOutbound) {
-            HeadsetChangesQueue.queueHeadsetChanges(() => this.sdk.headset.answerIncomingCall(conversationId, false));
+            this.log('info', 'mMoo: about to start answerIncomingCall');
+            HeadsetChangesQueue.queueHeadsetChanges(() => this.sdk.headset.answerIncomingCall(conversationId, false).then(() => {
+              this.log('info', 'mMoo: answerIncomingCall has resolved');
+            }));
           }
 
           /* only emit `sessionStarted` if we have an active session */
