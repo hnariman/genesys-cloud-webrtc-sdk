@@ -578,6 +578,8 @@ export default class SoftphoneSessionHandler extends BaseSessionHandler {
       this.conversations[pendingSession.conversationId]?.conversationUpdate
     );
 
+    pendingSession.accepted = true;
+
     if (!participant) {
       participant = await this.fetchUserParticipantFromConversationId(pendingSession.conversationId);
     }
