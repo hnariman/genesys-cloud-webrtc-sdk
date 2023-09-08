@@ -150,6 +150,7 @@ export class SdkHeadsetService extends SdkHeadsetBase {
     console.log('mMoo: inside headset updateAudioInputDevice', newMicId);
     const completeDeviceInfo = this.sdk.media.findCachedDeviceByIdAndKind(newMicId, 'audioinput');
     console.log('mMoo: completeDeviceInfo', completeDeviceInfo);
+    /* istanbul ignore next */
     this.headsetLibrary.activeMicChange(completeDeviceInfo?.deviceId !== 'default' ? completeDeviceInfo?.label?.toLowerCase() : '');
   }
 
