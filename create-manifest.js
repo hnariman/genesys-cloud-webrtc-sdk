@@ -25,13 +25,13 @@ try {
           return;
         }
         manifest.indexFiles.push({
-          file: '/demo/' + file + '/' + dirFile
+          file: 'demo/' + file + '/' + dirFile
         });
       });
       return;
     }
     manifest.indexFiles.push({
-      file: '/demo/' + file
+      file: 'demo/' + file
     });
   });
 } catch (e) {
