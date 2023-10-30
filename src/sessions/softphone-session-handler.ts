@@ -218,9 +218,6 @@ export default class SoftphoneSessionHandler extends BaseSessionHandler {
               ignoredConversation: this.conversations[conversationId],
               update
             });
-            if ((this.sdk.headset as HeadsetProxyService).orchestrationState === 'hasControls') {
-              this.sdk.headset.rejectIncomingCall(conversationId, true);
-            }
             delete this.conversations[conversationId];
             return;
           }
