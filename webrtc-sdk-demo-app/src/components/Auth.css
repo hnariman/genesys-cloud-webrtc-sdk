@@ -1,0 +1,30 @@
+.auth-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: black;
+  font-size: 25px;
+  width: 750px;
+  height: 750px;
+
+}
+
+.auth-form-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.form-control {
+  width: 300px !important;
+}
+.auth-card.card {
+  display: flex;
+  width: 500px;
+  height: 250px;
+  background-color: #f3f5fb;
+}
+
+#manual-auth-input, #env-selector {
+  margin: 10px;
+}
