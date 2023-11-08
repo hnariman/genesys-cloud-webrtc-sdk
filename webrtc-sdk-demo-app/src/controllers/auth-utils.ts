@@ -1,11 +1,11 @@
 import platformClient from 'purecloud-platform-client-v2';
+import { initWebrtcSDK } from './sdk-service';
 
 const client = platformClient.ApiClient.instance;
 const persitentName = 'sdk_test';
 
 export const environments = {
   'dca': {
-    // clientId: '2c75d833-922b-4324-9d0e-6c20b9c714b2', // created in valve-telphony org, dca
     clientId: '2e10c888-5261-45b9-ac32-860a1e67eff8',
     uri: 'inindca.com'
   },
@@ -40,6 +40,7 @@ export function authenticateFromUrlToken () {
   (platformClient.ApiClient as any).instance.authentications['PureCloud OAuth'].accessToken = token;
   (window as any).conversationsAPI = new platformClient.ConversationsApi();
 
+  initWebrtcSDK({ token, environment });
 }
 
 

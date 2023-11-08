@@ -21,7 +21,6 @@ export default function Auth() {
       env
     }
     checkAuthToken(auth);
-    console.log(token);
   }
 
   return (
