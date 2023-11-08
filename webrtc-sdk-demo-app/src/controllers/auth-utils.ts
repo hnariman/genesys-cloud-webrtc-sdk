@@ -4,6 +4,14 @@ import { initWebrtcSDK } from './sdk-service';
 const client = platformClient.ApiClient.instance;
 const persitentName = 'sdk_test';
 
+interface IAuthData {
+  token: string,
+  environment: {
+    clientId: string,
+    uri: string
+  }
+}
+
 export const environments = {
   'dca': {
     clientId: '2e10c888-5261-45b9-ac32-860a1e67eff8',
@@ -43,6 +51,24 @@ export function authenticateFromUrlToken () {
   initWebrtcSDK({ token, environment });
 }
 
+export function authenticateImplicitly (environment: any) {
+  const environmentData = (environments as any)[environment];
+  client.setPersistSettings(true, persitentName);
+  client.setEnvironment(environmentData.uri);
+
+  client.loginImplicitGrant(environmentData.clientId, window.location.href)
+    .then(() => {
+      const authInfo = JSON.parse((window as any).localStorage.getItem(`${persitentName}_auth_data`));
+      const authData: IAuthData = { token: authInfo.accessToken, environment: environmentData };
+      (platformClient.ApiClient as any).instance.authentications['PureCloud OAuth'].accessToken = authInfo.accessToken;
+      (window as any).conversationsAPI = new platformClient.ConversationsApi();
+
+      initWebrtcSDK(authData);
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+}
 
 function getCurrentUrlParams() {
   let params = null;

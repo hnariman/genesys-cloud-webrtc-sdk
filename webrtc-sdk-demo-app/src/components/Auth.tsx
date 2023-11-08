@@ -3,7 +3,7 @@ import './Auth.css';
 import Card from 'react-bootstrap/Card';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import { Button, Dropdown, Form } from 'react-bootstrap';
-import { checkAuthToken } from '../controllers/auth-utils';
+import { checkAuthToken, authenticateImplicitly } from '../controllers/auth-utils';
 
 
 export default function Auth() {
@@ -23,6 +23,10 @@ export default function Auth() {
     checkAuthToken(auth);
   }
 
+  function handleImplicitAuth() {
+    authenticateImplicitly(env);
+  }
+
   return (
     <div className='auth-wrapper'>
       <Card className='auth-card'>
@@ -37,6 +41,7 @@ export default function Auth() {
           </Form.Group>
           <Button variant='primary' type='submit'>Submit Manual Token</Button>
         </Form>
+        <Button variant='primary' onClick={handleImplicitAuth}>Implicit Auth</Button>
       </Card>
     </div>
   )

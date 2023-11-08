@@ -1,14 +1,14 @@
 import  { ISdkConfig, GenesysCloudWebrtcSdk } from 'genesys-cloud-webrtc-sdk';
+import { v4 } from 'uuid';
 
 let webrtcSdk: GenesysCloudWebrtcSdk;
 
 export async function initWebrtcSDK (authData: { token: string, environment:  { clientId: string, uri: string }}) {
-  console.warn(authData);
   const options: ISdkConfig = {
     accessToken: authData.token,
     environment: authData.environment.uri,
-    originAppId: 'react-demo',
-    originAppName: 'react-demo',
+    originAppId: v4(),
+    originAppName: 'webrtc-demo-app',
     optOutOfTelemetry: true,
     logLevel: 'info'
   }
