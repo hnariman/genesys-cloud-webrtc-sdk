@@ -1,26 +1,29 @@
 import { useEffect } from 'react';
 import './App.css';
 import Auth from './components/Auth';
-// import Home from './components/Home';
+import Dashboard from './components/Dashboard';
 import { authenticateFromUrlToken } from './services/auth-service';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Routes, Route, useNavigate } from 'react-router-dom';
+import { eventService } from './services/event-service';
 
 
 function App() {
+  const navigate = useNavigate();
 
   useEffect(() => {
+    eventService.addEventListener('ready', () => {
+      navigate('/home');
+    });
     authenticateFromUrlToken();
   }, []);
 
   return (
     <div className='App'>
       <div className='App-header'>
-        <BrowserRouter>
         <Routes>
           <Route path='/' element={<Auth />}></Route>
-          {/* <Route path='home' element={<Home />}></Route> */}
+          <Route path='home' element={<Dashboard />}></Route>
         </Routes>
-      </BrowserRouter>
       </div>
     </div>
 

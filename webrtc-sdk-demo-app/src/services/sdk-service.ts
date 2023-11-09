@@ -1,5 +1,6 @@
 import  { ISdkConfig, GenesysCloudWebrtcSdk, SdkError } from 'genesys-cloud-webrtc-sdk';
 import { v4 } from 'uuid';
+import { eventService } from './event-service';
 
 let webrtcSdk: GenesysCloudWebrtcSdk;
 
@@ -29,7 +30,7 @@ function connectEventHandlers() {
 }
 
 function ready() {
-  console.warn('we ready');
+  eventService.dispatchEvent('ready', {});
 }
 
 function handleSdkError(error: SdkError) {
