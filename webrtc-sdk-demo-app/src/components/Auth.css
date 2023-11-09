@@ -28,3 +28,10 @@
 #manual-auth-input, #env-selector {
   margin: 10px;
 }
+
+.auth-button-wrapper {
+  display: flex;
+  font-size: 16px;
+  justify-content: space-around;
+  margin: 15px;
+}

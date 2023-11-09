@@ -39,9 +39,11 @@ export default function Auth() {
             </DropdownButton>
             <Form.Control id='manual-auth-input' type='text' placeholder='Enter auth token' onChange={handleChange}></Form.Control>
           </Form.Group>
-          <Button variant='primary' type='submit'>Submit Manual Token</Button>
+          <div className='auth-button-wrapper'>
+            <Button id='implicit-auth-btn' variant='primary' onClick={handleImplicitAuth}>Implicit Authentication</Button>
+            <Button id='manual-auth-btn' variant='primary' type='submit'>Submit Manual Token</Button>
+          </div>
         </Form>
-        <Button variant='primary' onClick={handleImplicitAuth}>Implicit Auth</Button>
       </Card>
     </div>
   )
