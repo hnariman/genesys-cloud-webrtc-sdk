@@ -33,7 +33,7 @@ export async function checkAuthToken(auth: any) {
   authenticateFromUrlToken();
 }
 
-export function authenticateFromUrlToken () {
+export async function authenticateFromUrlToken () {
   const urlParams = getCurrentUrlParams();
   if (!urlParams) {
     return;
@@ -48,7 +48,7 @@ export function authenticateFromUrlToken () {
   (platformClient.ApiClient as any).instance.authentications['PureCloud OAuth'].accessToken = token;
   (window as any).conversationsAPI = new platformClient.ConversationsApi();
 
-  initWebrtcSDK({ token, environment });
+  await initWebrtcSDK({ token, environment });
 }
 
 export function authenticateImplicitly (environment: any) {

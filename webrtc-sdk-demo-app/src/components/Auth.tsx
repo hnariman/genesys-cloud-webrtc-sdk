@@ -1,20 +1,20 @@
-import { useState } from 'react'
+import { FormEvent, useState } from 'react'
 import './Auth.css';
 import Card from 'react-bootstrap/Card';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import { Button, Dropdown, Form } from 'react-bootstrap';
-import { checkAuthToken, authenticateImplicitly } from '../controllers/auth-utils';
+import { checkAuthToken, authenticateImplicitly } from '../services/auth-service';
 
 
 export default function Auth() {
   const [token, setToken] = useState('');
   const [env, setEnv] = useState('dca');
 
-  function handleChange(event: any): void {
-    setToken(event.target.value);
+  function handleChange(event: FormEvent): void {
+    setToken((event.target as HTMLFormElement).value);
   }
 
-  function handleAuthSubmit(event: any) {
+  function handleAuthSubmit(event: FormEvent) {
     event.preventDefault();
     const auth = {
       token,

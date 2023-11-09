@@ -1,4 +1,4 @@
-import  { ISdkConfig, GenesysCloudWebrtcSdk } from 'genesys-cloud-webrtc-sdk';
+import  { ISdkConfig, GenesysCloudWebrtcSdk, SdkError } from 'genesys-cloud-webrtc-sdk';
 import { v4 } from 'uuid';
 
 let webrtcSdk: GenesysCloudWebrtcSdk;
@@ -17,9 +17,21 @@ export async function initWebrtcSDK (authData: { token: string, environment:  { 
   (window as any).webrtcSdk = webrtcSdk;
   (window as any).sdk = webrtcSdk;
 
-  try {
-    await webrtcSdk.initialize()
-  } catch (error) {
-    console.error(error);
-  }
+  connectEventHandlers();
+
+
+  await webrtcSdk.initialize()
+}
+
+function connectEventHandlers() {
+  webrtcSdk.on('ready', ready);
+  webrtcSdk.on('sdkError', handleSdkError)
+}
+
+function ready() {
+  console.warn('we ready');
+}
+
+function handleSdkError(error: SdkError) {
+  console.error(error);
 }
