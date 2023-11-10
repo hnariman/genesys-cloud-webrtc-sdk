@@ -14,7 +14,7 @@ export default function Auth() {
     setToken((event.target as HTMLFormElement).value);
   }
 
-  function handleAuthSubmit(event: FormEvent) {
+  function handleAuthSubmit(event: FormEvent): void {
     event.preventDefault();
     const auth = {
       token,

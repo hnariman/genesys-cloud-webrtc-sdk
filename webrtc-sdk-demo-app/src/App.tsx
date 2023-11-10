@@ -2,9 +2,10 @@ import { useEffect } from 'react';
 import './App.css';
 import Auth from './components/Auth';
 import Dashboard from './components/Dashboard';
-import { authenticateFromUrlToken } from './services/auth-service';
+import { authenticateFromUrlToken, authenticateImplicitly } from './services/auth-service';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import { eventService } from './services/event-service';
+import Softphone from './components/Softphone';
 
 
 function App() {
@@ -12,9 +13,11 @@ function App() {
 
   useEffect(() => {
     eventService.addEventListener('ready', () => {
-      navigate('/home');
+      navigate('/softphone');
     });
-    authenticateFromUrlToken();
+    // authenticateFromUrlToken();
+    authenticateImplicitly('dca');
+
   }, []);
 
   return (
@@ -23,6 +26,7 @@ function App() {
         <Routes>
           <Route path='/' element={<Auth />}></Route>
           <Route path='home' element={<Dashboard />}></Route>
+          <Route path='softphone' element={<Softphone />}></Route>
         </Routes>
       </div>
     </div>
