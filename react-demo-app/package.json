@@ -12,8 +12,10 @@
   "dependencies": {
     "@vitejs/plugin-basic-ssl": "^1.1.0",
     "genesys-cloud-webrtc-sdk": "file:..",
+    "purecloud-platform-client-v2": "^188.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "uuid": "^9.0.1",
     "vite-plugin-node-polyfills": "^0.21.0"
   },
   "devDependencies": {
