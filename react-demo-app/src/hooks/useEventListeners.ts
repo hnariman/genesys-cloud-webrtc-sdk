@@ -6,7 +6,6 @@ import { useNavigate } from 'react-router-dom';
 import { ISdkConversationUpdateEvent, IStoredConversationState } from '../../../dist/es';
 
 interface IConversationsToAddOrRemove {
-  activeConversationId: string;
   conversationsToAdd: {
     [key: string]: IStoredConversationState;
   };
@@ -21,11 +20,9 @@ export default function useEventListners() {
 
   function createConversationsList (event: ISdkConversationUpdateEvent) {
     const conversationsToAddOrRemove: IConversationsToAddOrRemove = {
-      activeConversationId: '',
       conversationsToAdd: {},
       conversationsToRemove: {}
     }
-    conversationsToAddOrRemove.activeConversationId = event.activeConversationId;
     event.current.forEach(update => {
       conversationsToAddOrRemove.conversationsToAdd[update.conversationId] = update;
     });

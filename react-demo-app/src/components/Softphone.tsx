@@ -1,16 +1,15 @@
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useState } from 'react';
 import './Softphone.css';
 import { startSoftphoneSession, endSession } from '../services/sdk-service';
-import { eventService } from '../services/event-service';
-import { useDispatch, useSelector } from 'react-redux';
-import { addConversation, addPendingSession } from '../features/conversationsSlice';
+import { useSelector } from 'react-redux';
+// TODO: put this in an interfaces file.
+import { ConversationsState } from '../features/conversationsSlice';
 import useEventListners from '../hooks/useEventListeners';
 
 export default function Softphone() {
   const [phoneNumber, setPhoneNumber] = useState('');
   useEventListners();
-  const conversations = useSelector((state) => state.conversations.activeConversations);
-  const pendingSessions = useSelector((state) => state.conversations.pendingSessions);
+  const conversations: ConversationsState = useSelector((state) => state.conversations.activeConversations);
 
   console.warn('here are the convos in the component', conversations);
 
@@ -21,10 +20,10 @@ export default function Softphone() {
   }
 
   function createConversationsTable() {
-    console.warn(conversations)
-    if (!conversations || !conversations.length) {
+    if (!conversations || !Object.entries(conversations).length) {
       return;
     }
+    Object.entries(conversations).map(([key, value]) => console.warn(key, value));
     return (
       <div className="table-wrapper">
         <table>
@@ -33,48 +32,28 @@ export default function Softphone() {
               <th>Conversation ID</th>
               <th>Session ID</th>
               <th>Session Type</th>
+              <th>Direction</th>
               <th>Session State</th>
               <th>Connection State</th>
+              <th>Muted</th>
+              <th>Held</th>
               <th>End Call</th>
-              {/* <th>Session ID</th>
-              <th>Active?</th>
-              <th></th>
-              <th>Header 6</th>
-              <th>Header 7</th>
-              <th>Header 8</th>
-              <th>Header 9</th>
-              <th>Header 10</th>
-              <th>Header 11</th>
-              <th>Header 12</th>
-              <th>Header 13</th> */}
             </tr>
           </thead>
           <tbody>
-            {conversations.map((conversation, index: number) => (
-            <tr key={index}>
-              <td>{conversation.activeConversationId}</td>
-              <td>{conversation.current[0].session.id}</td>
-              <td>{conversation.current[0].session.sessionType}</td>
-              <td>{conversation.current[0].session.state}</td>
-              <td>{conversation.current[0].session.connectionState}</td>
-              <td><button onClick={() => endSession({ conversationId: conversation.activeConversationId })}>End call</button></td>
-            </tr>
+            {Object.entries(conversations).map(([key, value]) => (
+              <tr key={key}>
+                <td>{value.conversationId}</td>
+                <td>{value.session.id}</td>
+                <td>{value.mostRecentCallState?.direction}</td>
+                <td>{value.session.sessionType}</td>
+                <td>{value.session.state}</td>
+                <td>{value.session.connectionState}</td>
+                <td>{value.mostRecentCallState.muted}</td>
+                <td>{value.mostRecentCallState.held}</td>
+                <td><button onClick={() => endSession({ conversationId: value.conversationId })}>End call</button></td>
+              </tr>
           ))}
-            {/* <tr>
-              <td>Data 1</td>
-              <td>Data 2</td>
-              <td>Data 3</td>
-              <td>Data 4</td>
-              <td>Data 5</td>
-              <td>Data 6</td>
-              <td>Data 7</td>
-              <td>Data 8</td>
-              <td>Data 9</td>
-              <td>Data 10</td>
-              <td>Data 11</td>
-              <td>Data 12</td>
-              <td>Data 13</td>
-            </tr> */}
           </tbody>
         </table>
       </div>

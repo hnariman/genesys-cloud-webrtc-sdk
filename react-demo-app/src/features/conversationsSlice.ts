@@ -18,10 +18,10 @@ export const converationsSlice = createSlice({
       state.pendingSessions = [...state.pendingSessions, action.payload];
     },
     updateConversations: (state, action) => {
-      const { activeConversationId, conversationsToAdd, conversationsToRemove } = action.payload;
+      const { conversationsToAdd, conversationsToRemove } = action.payload;
       // check if we already have this conversation in state before we add it
-    if (!state.activeConversations[activeConversationId]) {
-        state.activeConversations[activeConversationId] = conversationsToAdd;
+      if (!state.activeConversations[conversationsToAdd]) {
+        state.activeConversations = conversationsToAdd;
       }
       // remove conversations from state
       for (const id in conversationsToRemove) {
