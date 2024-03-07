@@ -1,15 +1,18 @@
 import { useEffect } from 'react';
 import { eventService } from '../services/event-service';
 import { useDispatch } from 'react-redux';
-import { addConversation, addPendingSession } from '../features/conversationsSlice';
+import { updateConversations, addPendingSession } from '../features/conversationsSlice';
 import { useNavigate } from 'react-router-dom';
 import { ISdkConversationUpdateEvent, IStoredConversationState } from '../../../dist/es';
 
-interface IConversationsToAdd {
+interface IConversationsToAddOrRemove {
   activeConversationId: string;
-  conversations: {
-    [key: string]: IStoredConversationState; // Use the type that matches the structure of update
+  conversationsToAdd: {
+    [key: string]: IStoredConversationState;
   };
+  conversationsToRemove: {
+    [key: string]: IStoredConversationState;
+  }
 }
 
 export default function useEventListners() {
@@ -17,34 +20,35 @@ export default function useEventListners() {
   const navigate = useNavigate();
 
   function createConversationsList (event: ISdkConversationUpdateEvent) {
-    const conversationsToAdd: IConversationsToAdd = {
+    const conversationsToAddOrRemove: IConversationsToAddOrRemove = {
       activeConversationId: '',
-      conversations: {}
+      conversationsToAdd: {},
+      conversationsToRemove: {}
     }
-    conversationsToAdd.activeConversationId = event.activeConversationId;
+    conversationsToAddOrRemove.activeConversationId = event.activeConversationId;
     event.current.forEach(update => {
-      conversationsToAdd.conversations[update.conversationId] = update;
+      conversationsToAddOrRemove.conversationsToAdd[update.conversationId] = update;
     });
 
-    return conversationsToAdd;
+    event.removed.forEach(update => {
+      conversationsToAddOrRemove.conversationsToRemove[update.conversationId] = update;
+    });
+
+    return conversationsToAddOrRemove;
   }
 
   // TODO: Create an array that stores all events received and the order they were received in.
   useEffect(() => {
-    eventService.addEventListener('ready', () => navigate('/dashboard'));
-    eventService.addEventListener('pendingSession', (event) => console.warn('hook pending: ', event.detail));
-    eventService.addEventListener('conversationUpdate', (event) => {
-      const conversationUpdate: ISdkConversationUpdateEvent = event.detail;
-      const conversationToAdd = createConversationsList(conversationUpdate);
-      dispatch(addConversation(conversationToAdd));
-    });
-    eventService.addEventListener('cancelPendingSession', (event) => console.warn('pending cancelled inside hook', event));
-    eventService.addEventListener('handledPendingSession', (event) => console.warn('handled pending inside hook', event));
-    eventService.addEventListener('sessionStarted', (event) => console.warn('session started inside hook', event));
-    eventService.addEventListener('sdkError', (event) => console.warn('sdk error inside hook', event));
-    eventService.addEventListener('sessionEnded', (event) => console.warn('session ended inside hook', event));
-    eventService.addEventListener('disconnected', (event) => console.warn('disconnected inside hook', event));
-    eventService.addEventListener('connected', (event) => console.warn('connected inside hook', event));
+    eventService.addEventListener('ready', handleReady);
+    eventService.addEventListener('pendingSession', handlePending);
+    eventService.addEventListener('conversationUpdate', handleConversationUpdate);
+    eventService.addEventListener('cancelPendingSession', handleCancelPendingSession);
+    eventService.addEventListener('handledPendingSession', handledPendingSession);
+    eventService.addEventListener('sessionStarted', handleSessionStarted);
+    eventService.addEventListener('sdkError', handleSdkError);
+    eventService.addEventListener('sessionEnded', handleSessionEnded);
+    eventService.addEventListener('disconnected', handleDisconnected);
+    eventService.addEventListener('connected', handleConnected);
 
     // webrtcSdk.on('error', error);
     // webrtcSdk.on('terminated', terminated);
@@ -60,17 +64,34 @@ export default function useEventListners() {
 
 
     return () => {
-      eventService.removeEventListener('ready', () => navigate('/dashboard'));
-      eventService.removeEventListener('pendingSession', (event) => console.warn('we should log something:', event));
-      eventService.removeEventListener('conversationUpdate', (event) => dispatch(addConversation(event.detail)));
-      eventService.removeEventListener('cancelPendingSession', (event) => console.warn('pending cancelled inside hook', event));
-      eventService.removeEventListener('handledPendingSession', (event) => console.warn('handled pending inside hook', event));
-      eventService.removeEventListener('sessionStarted', (event) => console.warn('session started inside hook', event));
-      eventService.removeEventListener('sdkError', (event) => console.warn('sdk error inside hook', event));
-      eventService.removeEventListener('sessionEnded', (event) => console.warn('session ended inside hook', event));
-      eventService.removeEventListener('disconnected', (event) => console.warn('disconnected inside hook', event));
-      eventService.removeEventListener('connected', (event) => console.warn('connected inside hook', event));
+      eventService.removeEventListener('ready', handleReady);
+      eventService.removeEventListener('pendingSession', handlePending);
+      eventService.removeEventListener('conversationUpdate', handleConversationUpdate);
+      eventService.removeEventListener('cancelPendingSession', handleCancelPendingSession);
+      eventService.removeEventListener('handledPendingSession', handledPendingSession);
+      eventService.removeEventListener('sessionStarted', handleSessionStarted);
+      eventService.removeEventListener('sdkError', handleSdkError);
+      eventService.removeEventListener('sessionEnded', handleSessionEnded);
+      eventService.removeEventListener('disconnected', handleDisconnected);
+      eventService.removeEventListener('connected', handleConnected);
     }
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, navigate]);
+
+  // Event handlers.
+  const handleReady = () => navigate('/dashboard');
+  const handlePending = (event) => console.warn('hook pending: ', event.detail);
+  const handleConversationUpdate = (event) => {
+    const conversationUpdate: ISdkConversationUpdateEvent = event.detail;
+    const conversationToAddOrRemove = createConversationsList(conversationUpdate);
+    dispatch(updateConversations(conversationToAddOrRemove));
+  };
+  const handleCancelPendingSession = (event) => console.warn('pending cancelled inside hook', event);
+  const handledPendingSession =  (event) => console.warn('handled pending inside hook', event);
+  const handleSessionStarted = (event) => console.warn('session started inside hook', event);
+  const handleSdkError = (event) => console.warn('sdk error inside hook', event);
+  const handleSessionEnded = (event) => console.warn('session ended inside hook', event);
+  const handleDisconnected = (event) => console.warn('disconnected inside hook', event);
+  const handleConnected = (event) => console.warn('connected inside hook', event);
 }
