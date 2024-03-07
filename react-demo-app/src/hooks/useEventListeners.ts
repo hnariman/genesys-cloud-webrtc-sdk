@@ -1,22 +1,42 @@
 import { useEffect } from 'react';
 import { eventService } from '../services/event-service';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { addConversation, addPendingSession } from '../features/conversationsSlice';
 import { useNavigate } from 'react-router-dom';
-import { ISdkConversationUpdateEvent } from '../../../dist/es';
+import { ISdkConversationUpdateEvent, IStoredConversationState } from '../../../dist/es';
+
+interface IConversationsToAdd {
+  activeConversationId: string;
+  conversations: {
+    [key: string]: IStoredConversationState; // Use the type that matches the structure of update
+  };
+}
 
 export default function useEventListners() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const conversations = useSelector((state) => state.conversations.activeConversations);
+
+  function createConversationsList (event: ISdkConversationUpdateEvent) {
+    const conversationsToAdd: IConversationsToAdd = {
+      activeConversationId: '',
+      conversations: {}
+    }
+    conversationsToAdd.activeConversationId = event.activeConversationId;
+    event.current.forEach(update => {
+      conversationsToAdd.conversations[update.conversationId] = update;
+    });
+
+    return conversationsToAdd;
+  }
 
   // TODO: Create an array that stores all events received and the order they were received in.
   useEffect(() => {
     eventService.addEventListener('ready', () => navigate('/dashboard'));
     eventService.addEventListener('pendingSession', (event) => console.warn('hook pending: ', event.detail));
     eventService.addEventListener('conversationUpdate', (event) => {
-      // const conversationUpdate: ISdkConversationUpdateEvent = event.detail;
-      dispatch(addConversation(event.detail))
+      const conversationUpdate: ISdkConversationUpdateEvent = event.detail;
+      const conversationToAdd = createConversationsList(conversationUpdate);
+      dispatch(addConversation(conversationToAdd));
     });
     eventService.addEventListener('cancelPendingSession', (event) => console.warn('pending cancelled inside hook', event));
     eventService.addEventListener('handledPendingSession', (event) => console.warn('handled pending inside hook', event));

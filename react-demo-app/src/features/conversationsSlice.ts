@@ -1,14 +1,13 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { IPendingSession, ISdkConversationUpdateEvent } from '../../../dist/es';
+import { IPendingSession, IStoredConversationState } from '../../../dist/es';
 
 export interface ConversationsState {
   pendingSessions: IPendingSession[],
-  activeConversations: ISdkConversationUpdateEvent[]
-}
+  activeConversations: { [key: string]: IStoredConversationState };}
 
 const initialState: ConversationsState = {
   pendingSessions: [],
-  activeConversations: []
+  activeConversations: {}
 }
 
 export const converationsSlice = createSlice({
@@ -18,9 +17,14 @@ export const converationsSlice = createSlice({
     addPendingSession: (state, action) => {
       state.pendingSessions = [...state.pendingSessions, action.payload];
     },
-    // Need to check if we already have this conversation in state - if we have this update then don't add to state array.
+    // check if we already have this conversation in state - if we have this update then don't add to state.
     addConversation: (state, action) => {
-      state.activeConversations = [...state.activeConversations, action.payload];
+      if (state.activeConversations[action.payload.activeConversationId]) {
+        return;
+      }
+      const activeConversations = { ...state.activeConversations };
+      activeConversations[action.payload.activeConversationId] = action.payload;
+      state.activeConversations = activeConversations;
     }
     // removeConversation: (state) => (state as any).pop()
 
