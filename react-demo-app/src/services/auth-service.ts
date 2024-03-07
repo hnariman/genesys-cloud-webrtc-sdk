@@ -1,5 +1,5 @@
 import platformClient from 'purecloud-platform-client-v2';
-import { initWebrtcSDK, initWebrtcSdk } from './sdk-service';
+import { initWebrtcSDK } from './sdk-service';
 
 const client = platformClient.ApiClient.instance;
 const persitentName = 'sdk_test';
@@ -18,7 +18,7 @@ export const environments = {
     uri: 'inindca.com'
   },
   'pca-us': {
-    clientId: '6b9f791c-86ef-4f7a-af85-3f3520dd0975', // created in torontohackathon org
+    clientId: '6b9f791c-86ef-4f7a-af85-3f3520dd0975',
     uri: 'mypurecloud.com'
   }
 };

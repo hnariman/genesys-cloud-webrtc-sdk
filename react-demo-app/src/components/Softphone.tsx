@@ -45,12 +45,12 @@ export default function Softphone() {
               <tr key={key}>
                 <td>{value.conversationId}</td>
                 <td>{value.session.id}</td>
-                <td>{value.mostRecentCallState?.direction}</td>
+                <td>{value.mostRecentCallState.direction}</td>
                 <td>{value.session.sessionType}</td>
                 <td>{value.session.state}</td>
                 <td>{value.session.connectionState}</td>
-                <td>{value.mostRecentCallState.muted}</td>
-                <td>{value.mostRecentCallState.held}</td>
+                <td>{value.mostRecentCallState.muted.toString()}</td>
+                <td>{value.mostRecentCallState.held.toString()}</td>
                 <td><button onClick={() => endSession({ conversationId: value.conversationId })}>End call</button></td>
               </tr>
           ))}
@@ -62,6 +62,7 @@ export default function Softphone() {
 
   return (
     <div className="softphone-wrapper">
+      <h1>Softphone Dashboard</h1>
       <form onSubmit={placeCall}>
         <label>Phone Number: </label>
         <input type="text" name="softphone-input" onChange={(e) => setPhoneNumber(e.target.value)}></input>

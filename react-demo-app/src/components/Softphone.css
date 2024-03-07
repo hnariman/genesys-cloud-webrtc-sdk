@@ -1,5 +1,14 @@
 .softphone-wrapper {
-
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 85%;
+  width: 85%;
+  border: 2px solid black;
+  box-shadow: 5px 5px 5px grey;
+  border-radius: 10px;
+  box-sizing: border-box;
 }
 
 .table-wrapper {

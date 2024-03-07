@@ -19,8 +19,8 @@ export async function initWebrtcSDK (authData: { token: string, environment:  { 
   }
 
   webrtcSdk = new GenesysCloudWebrtcSdk(options);
-  (window as any).webrtcSdk = webrtcSdk;
-  (window as any).sdk = webrtcSdk;
+  (window as any)['webrtcSdk'] = webrtcSdk;
+  (window as any)['sdk'] = webrtcSdk;
 
   connectEventHandlers();
 
