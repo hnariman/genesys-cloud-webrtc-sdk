@@ -16,4 +16,13 @@ export const eventService = {
       });
     }
   },
+  removeEventListener(eventName: string, callback: (event: CustomEvent) => void) {
+    if (this.eventListeners.has(eventName)) {
+      const listeners = this.eventListeners.get(eventName);
+      const index = listeners?.indexOf(callback);
+      if (index !== -1) {
+        listeners?.splice(index as number, 1);
+      }
+    }
+  },
 };

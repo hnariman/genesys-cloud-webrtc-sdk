@@ -1,4 +1,4 @@
-import  { ISdkConfig, GenesysCloudWebrtcSdk, SdkError, ISessionIdAndConversationId } from 'genesys-cloud-webrtc-sdk';
+import  { ISdkConfig, GenesysCloudWebrtcSdk, SdkError, ISessionIdAndConversationId, IConversationHeldRequest, ISdkConversationUpdateEvent, IEndSessionRequest } from 'genesys-cloud-webrtc-sdk';
 import { v4 } from 'uuid';
 import { eventService } from './event-service';
 import { GenesysCloudMediaSession } from 'genesys-cloud-streaming-client';
@@ -29,7 +29,7 @@ export async function initWebrtcSDK (authData: { token: string, environment:  { 
 }
 
 function connectEventHandlers() {
-  webrtcSdk.on('ready', ready);
+  webrtcSdk.on('ready', () => eventService.dispatchEvent('ready', {}));
   webrtcSdk.on('sdkError', handleSdkError)
   webrtcSdk.on('pendingSession', handlePendingSession);
   webrtcSdk.on('cancelPendingSession', handlePendingSessionCancelled);
@@ -39,10 +39,7 @@ function connectEventHandlers() {
   // webrtcSdk.on('trace', trace);
   webrtcSdk.on('disconnected', handleDisconnected);
   webrtcSdk.on('connected', handleConnected);
-}
-
-function ready() {
-  eventService.dispatchEvent('ready', {});
+  webrtcSdk.on('conversationUpdate', (event: ISdkConversationUpdateEvent) => eventService.dispatchEvent('conversationUpdate', event));
 }
 
 export function startSoftphoneSession (phoneNumber: string) {
@@ -53,11 +50,16 @@ export function startSoftphoneSession (phoneNumber: string) {
   webrtcSdk.startSoftphoneSession({ phoneNumber });
 }
 
+export function endSession(request: IEndSessionRequest) {
+  console.warn('the request: ', request);
+  webrtcSdk.endSession(request);
+}
+
 function handlePendingSession(pendingSession: ISessionIdAndConversationId) {
-  console.warn('we have a pending session!', pendingSession)
   // Check if we already have this pending session -> if not add it to array and emit to UI
   const existingPendingSession = pendingSessions.find((s: any) => s.conversationId === pendingSession.conversationId);
   if (!existingPendingSession) {
+    console.warn('pushing pending', pendingSession);
     pendingSessions.push(pendingSession);
     eventService.dispatchEvent('pendingSession', pendingSessions);
   }
@@ -94,8 +96,10 @@ session.on('connectionState', () => console.warn('state'));
 webrtcSdk.acceptSession({ conversationId: session.conversationId, sessionType: session.sessionType });
 }
 
-function handleSessionEnded() {
+function handleSessionEnded(session: GenesysCloudMediaSession) {
   console.warn('handle session ended!')
+  eventService.dispatchEvent('sessionEnded', session);
+
 }
 
 function handlePendingSessionCancelled() {
@@ -114,6 +118,10 @@ function handleSdkError(error: SdkError) {
   console.error(error);
 }
 
+function enumerateDevices () {
+  return webrtcSdk.media.enumerateDevices(true);
+}
 
 
-export { webrtcSdk, pendingSessions }
+
+export { webrtcSdk, pendingSessions, enumerateDevices }
