@@ -1,72 +1,28 @@
 .softphone-wrapper {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   flex-direction: column;
   height: 85%;
   width: 85%;
   border: 2px solid black;
-  box-shadow: 5px 5px 5px grey;
+  /* box-shadow: 5px 5px 5px grey; */
   border-radius: 10px;
   box-sizing: border-box;
+  background-color: #e8ebf7;
 }
 
-.table-wrapper {
-  overflow-x: auto;
+.softphone-form {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-th, td {
-  padding: 8px;
-  text-align: left;
-  border-bottom: 1px solid #ddd;
-}
-
-th {
-  background-color: #f2f2f2;
-  position: sticky;
-  top: 0;
-}
-
-tbody tr:nth-child(even) {
-  background-color: #f2f2f2;
-}
-
-@media only screen and (max-width: 600px) {
-  /* Make table responsive by stacking rows on small screens */
-  table, thead, tbody, th, td, tr {
-    display: block;
-  }
-
-  thead tr {
-    position: absolute;
-    top: -9999px;
-    left: -9999px;
-  }
-
-  tr {
-    border: 1px solid #ccc;
-    margin-bottom: 10px;
-  }
-
-  td {
-    border: none;
-    border-bottom: 1px solid #ddd;
-    position: relative;
-    padding-left: 50%;
-  }
-
-  td:before {
-    position: absolute;
-    top: 6px;
-    left: 6px;
-    width: 45%;
-    padding-right: 10px;
-    white-space: nowrap;
-    content: attr(data-label);
-  }
+.phone-input {
+  border: 1px solid black;
+  background: white;
+  width: 200px;
+  height: 25px;
+  border-radius: 3px;
+  margin: 10px 0 10px 0;
 }
