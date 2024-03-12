@@ -6,6 +6,7 @@ import { useSelector } from "react-redux";
 import { ConversationsState } from "../features/conversationsSlice";
 import useEventListners from "../hooks/useEventListeners";
 import { GuxButton, GuxCard, GuxTable } from "genesys-spark-components-react";
+import { IPendingSession } from "../../../dist/es/types/interfaces";
 
 export default function Softphone() {
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -13,6 +14,7 @@ export default function Softphone() {
   const conversations: ConversationsState = useSelector(
     (state) => state.conversations.activeConversations
   );
+  const pendingSessions = useSelector((state) => state.conversations.pendingSessions);
   const sdk = (window as any).sdk
 
   function placeCall(): void {
@@ -24,7 +26,6 @@ export default function Softphone() {
   }
 
   function holdCall(held: boolean, conversationId: string): void {
-    console.warn('conversation id: ', conversationId, held);
     sdk.setConversationHeld({held, conversationId})
   }
 
@@ -32,13 +33,19 @@ export default function Softphone() {
     sdk.setAudioMute({mute, conversationId});
   }
 
+  function handlePendingSession(accept: boolean, conversationId: string): void {
+    if (accept) {
+      sdk.acceptPendingSession({ conversationId });
+    } else {
+      sdk.rejectPendingSession({ conversationId });
+    }
+
+  }
+
   function createConversationsTable() {
     if (!conversations || !Object.entries(conversations).length) {
       return;
     }
-    Object.entries(conversations).map(([key, value]) =>
-      console.warn(key, value)
-    );
     return (
       <GuxCard className="gux-body-md-bold">
         <label>Active Conversations</label>
@@ -95,6 +102,49 @@ export default function Softphone() {
     );
   }
 
+  function createPendingSessionsTable() {
+    if (!pendingSessions || !pendingSessions.length) {
+      return;
+    }
+    return (
+      <GuxCard className="gux-body-md-bold">
+        <label>Pending Sessions</label>
+        <GuxTable>
+          <table slot="data">
+            <thead>
+              <tr>
+                <th>Conversation ID</th>
+                <th>Session ID</th>
+                <th>Auto Answer</th>
+                <th>Answer</th>
+                <th>Decline</th>
+              </tr>
+            </thead>
+            <tbody>
+              {pendingSessions.map((pendingSession: IPendingSession, index: number) => (
+                <tr key={index}>
+                  <td>{pendingSession.conversationId}</td>
+                  <td>{pendingSession.sessionId}</td>
+                  <td>{pendingSession.autoAnswer?.toString()}</td>
+                  <td>
+                    <GuxButton accent="primary" onClick={()=> handlePendingSession(true ,pendingSession.conversationId)}>
+                      Answer
+                    </GuxButton>
+                  </td>
+                  <td>
+                    <GuxButton accent="danger" onClick={()=> handlePendingSession(false, pendingSession.conversationId)}>
+                      Decline
+                    </GuxButton>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </GuxTable>
+      </GuxCard>
+    )
+  }
+
   return (
     <div className="softphone-wrapper">
         <GuxCard id="softphone-card" accent="raised">
@@ -106,6 +156,7 @@ export default function Softphone() {
           </div>
         </GuxCard>
       <div className="softphone-sessions">{createConversationsTable()}</div>
+      <div className="softphone-sessions">{createPendingSessionsTable()}</div>
     </div>
   );
 }

@@ -61,15 +61,13 @@ function handlePendingSession(pendingSession: ISessionIdAndConversationId) {
   if (!existingPendingSession) {
     console.warn('pushing pending', pendingSession);
     pendingSessions.push(pendingSession);
-    eventService.dispatchEvent('pendingSession', pendingSessions);
+    eventService.dispatchEvent('pendingSession', pendingSession);
   }
 }
 
 function pendingSessionHandled(pendingSession: ISessionIdAndConversationId) {
   console.warn('already handled boss', pendingSession);
-  // Remove pending session from global pendingSessions array and emit new array to UI
-  pendingSessions = pendingSessions.filter((s: any) => s.conversationId !== pendingSession.conversationId);
-  eventService.dispatchEvent('pendingSession', pendingSessions);
+  eventService.dispatchEvent('handledPendingSession', pendingSession);
 }
 
 function handleSessionStarted(session: GenesysCloudMediaSession) {

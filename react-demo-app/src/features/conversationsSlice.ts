@@ -14,8 +14,11 @@ export const converationsSlice = createSlice({
   name: 'conversations',
   initialState,
   reducers: {
-    addPendingSession: (state, action) => {
-      state.pendingSessions = [...state.pendingSessions, action.payload];
+    updatePendingSessions: (state, action) => {
+      const existingSession = state.pendingSessions.find(session => session.id === action.payload.id);
+      if (!existingSession) {
+        state.pendingSessions = [...state.pendingSessions, action.payload];
+      }
     },
     updateConversations: (state, action) => {
       const { conversationsToAdd, conversationsToRemove } = action.payload;
@@ -28,9 +31,14 @@ export const converationsSlice = createSlice({
         delete state.activeConversations[id];
       }
     },
+    // If a pending session has been accepted we need to remove it from state.
+    removePendingSession: (state, action) => {
+      const updatedPendingSessions = state.pendingSessions.filter(session => session.conversationId === action.payload.conversationId);
+      state.pendingSessions = updatedPendingSessions;
+    }
 
   }
 });
 
-export const { updateConversations, addPendingSession } = converationsSlice.actions;
+export const { updateConversations, updatePendingSessions, removePendingSession } = converationsSlice.actions;
 export default converationsSlice.reducer;
