@@ -1,35 +1,47 @@
-import { FormEvent, useState } from 'react';
-import './Softphone.css';
-import { startSoftphoneSession, endSession } from '../services/sdk-service';
-import { useSelector } from 'react-redux';
+import { useState } from "react";
+import "./Softphone.css";
+import { startSoftphoneSession, endSession } from "../services/sdk-service";
+import { useSelector } from "react-redux";
 // TODO: put this in an interfaces file.
-import { ConversationsState } from '../features/conversationsSlice';
-import useEventListners from '../hooks/useEventListeners';
-import { GuxButton, GuxTable } from 'genesys-spark-components-react';
+import { ConversationsState } from "../features/conversationsSlice";
+import useEventListners from "../hooks/useEventListeners";
+import { GuxButton, GuxCard, GuxTable } from "genesys-spark-components-react";
 
 export default function Softphone() {
-  const [phoneNumber, setPhoneNumber] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState("");
   useEventListners();
-  const conversations: ConversationsState = useSelector((state) => state.conversations.activeConversations);
+  const conversations: ConversationsState = useSelector(
+    (state) => state.conversations.activeConversations
+  );
+  const sdk = (window as any).sdk
 
-  console.warn('here are the convos in the component', conversations);
-
-
-  function placeCall(event: FormEvent): void {
-    event.preventDefault();
+  function placeCall(): void {
     if (!phoneNumber) {
-      alert('Please enter a phone number to place a call.');
+      alert("Please enter a phone number to place a call.");
     }
+    // TODO: just bypass the service and go straight through sdk.
     startSoftphoneSession(phoneNumber);
+  }
+
+  function holdCall(held: boolean, conversationId: string): void {
+    console.warn('conversation id: ', conversationId, held);
+    sdk.setConversationHeld({held, conversationId})
+  }
+
+  function handleMute(mute: boolean, conversationId: string): void {
+    sdk.setAudioMute({mute, conversationId});
   }
 
   function createConversationsTable() {
     if (!conversations || !Object.entries(conversations).length) {
       return;
     }
-    Object.entries(conversations).map(([key, value]) => console.warn(key, value));
+    Object.entries(conversations).map(([key, value]) =>
+      console.warn(key, value)
+    );
     return (
-      <>
+      <GuxCard className="gux-body-md-bold">
+        <label>Active Conversations</label>
         <GuxTable>
           <table slot="data">
             <thead>
@@ -54,29 +66,46 @@ export default function Softphone() {
                   <td>{value.session.sessionType}</td>
                   <td>{value.session.state}</td>
                   <td>{value.session.connectionState}</td>
-                  <td>{value.mostRecentCallState.muted.toString()}</td>
-                  <td>{value.mostRecentCallState.held.toString()}</td>
-                  <td><GuxButton accent="danger" onClick={() => endSession({ conversationId: value.conversationId })}>End call</GuxButton></td>
+                  <td>
+                    <GuxButton onClick={()=> handleMute(!value.mostRecentCallState.muted, value.conversationId)}>
+                      {value.mostRecentCallState.muted ? 'Unmute' : 'Mute'}
+                    </GuxButton>
+                  </td>
+                  <td>
+                    <GuxButton onClick={()=> holdCall(!value.mostRecentCallState, value.conversationId)}>
+                      {value.mostRecentCallState.held ? 'Unhold' : 'Hold'}
+                    </GuxButton>
+                  </td>
+                  <td>
+                    <GuxButton
+                      accent="danger"
+                      onClick={() =>
+                        endSession({ conversationId: value.conversationId })
+                      }
+                    >
+                      End call
+                    </GuxButton>
+                  </td>
                 </tr>
-            ))}
+              ))}
             </tbody>
           </table>
         </GuxTable>
-      </>
-    )
+      </GuxCard>
+    );
   }
 
   return (
     <div className="softphone-wrapper">
-      <h3 className='gux-heading-lg-bold'>Softphone Dashboard</h3>
-      <form className="softphone-form">
-        <label className='gux-body-lg-bold'>Phone Number: </label>
-        <input className="phone-input" type="text" name="softphone-input" onChange={(e) => setPhoneNumber(e.target.value)}></input>
-        <GuxButton accent='primary' onClick={placeCall}>Place call</GuxButton>
-      </form>
-      <div className="softphone-sessions">
-        {createConversationsTable()}
-      </div>
+        <GuxCard id="softphone-card" accent="raised">
+          <div className="softphone-call-content">
+            <label className="gux-body-md-bold">Outbound Phone Call</label>
+            <input type="text" onChange={(e) => setPhoneNumber(e.target.value)} />
+            <GuxButton accent="primary" className="call-btn" onClick={placeCall}>Place Call</GuxButton>
+            <GuxButton accent="danger" className="end-btn">End All</GuxButton>
+          </div>
+        </GuxCard>
+      <div className="softphone-sessions">{createConversationsTable()}</div>
     </div>
-  )
+  );
 }

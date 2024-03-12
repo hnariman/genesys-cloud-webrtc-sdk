@@ -12,17 +12,17 @@
   background-color: #e8ebf7;
 }
 
-.softphone-form {
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: column;
+#softphone-card {
+  margin: 10px;
+  width: 300px;
+}
+.call-btn, .end-btn {
+  margin: 5px 0 5px 0;
 }
 
-.phone-input {
-  border: 1px solid black;
-  background: white;
-  width: 200px;
-  height: 25px;
-  border-radius: 3px;
-  margin: 10px 0 10px 0;
+.softphone-call-content {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
 }
