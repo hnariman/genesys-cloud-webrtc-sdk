@@ -7,6 +7,7 @@ import { ConversationsState } from "../features/conversationsSlice";
 import useEventListners from "../hooks/useEventListeners";
 import { GuxButton, GuxCard, GuxTable } from "genesys-spark-components-react";
 import { IPendingSession } from "../../../dist/es/types/interfaces";
+import StationDetails from "./StationDetails";
 
 export default function Softphone() {
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -147,14 +148,21 @@ export default function Softphone() {
 
   return (
     <div className="softphone-wrapper">
+      <div className="softphone-controls">
         <GuxCard id="softphone-card" accent="raised">
-          <div className="softphone-call-content">
-            <label className="gux-body-md-bold">Outbound Phone Call</label>
-            <input type="text" onChange={(e) => setPhoneNumber(e.target.value)} />
-            <GuxButton accent="primary" className="call-btn" onClick={placeCall}>Place Call</GuxButton>
-            <GuxButton accent="danger" className="end-btn">End All</GuxButton>
-          </div>
-        </GuxCard>
+            <div className="softphone-call-content">
+              <label className="gux-body-md-bold">Outbound Phone Call</label>
+              <input type="text" onChange={(e) => setPhoneNumber(e.target.value)} />
+              <GuxButton accent="primary" className="call-btn" onClick={placeCall}>Place Call</GuxButton>
+              <GuxButton accent="danger" className="end-btn">End All</GuxButton>
+            </div>
+          </GuxCard>
+          <GuxCard id="softphone-station" accent="raised">
+            <div className="softphone-call-content">
+              <StationDetails></StationDetails>
+            </div>
+          </GuxCard>
+      </div>
       <div className="softphone-sessions">{createConversationsTable()}</div>
       <div className="softphone-sessions">{createPendingSessionsTable()}</div>
     </div>

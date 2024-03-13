@@ -1,0 +1,10 @@
+.station-details-wrapper {
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  flex-direction: column;
+}
+
+.gux-body-md-bold {
+  margin: 0;
+}
