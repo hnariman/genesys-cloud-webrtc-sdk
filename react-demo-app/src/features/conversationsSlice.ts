@@ -33,7 +33,7 @@ export const converationsSlice = createSlice({
     },
     // If a pending session has been accepted we need to remove it from state.
     removePendingSession: (state, action) => {
-      const updatedPendingSessions = state.pendingSessions.filter(session => session.conversationId === action.payload.conversationId);
+      const updatedPendingSessions = state.pendingSessions.filter(session => session.conversationId !== action.payload.conversationId);
       state.pendingSessions = updatedPendingSessions;
     }
 

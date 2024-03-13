@@ -115,9 +115,9 @@ export default function useEventListners() {
     dispatch(updateConversations(conversationToAddOrRemove));
   };
   const handleCancelPendingSession = (event) =>
-    console.warn("pending cancelled inside hook", event);
+    dispatch(removePendingSession(event.detail));
   const handledPendingSession = (event) =>
-    dispatch(removePendingSession(event.detail))
+    dispatch(removePendingSession(event.detail));
   const handleSessionStarted = (event) =>
     console.warn("session started inside hook", event);
   const handleSdkError = (event) =>
