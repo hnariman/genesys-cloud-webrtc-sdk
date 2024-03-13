@@ -1,11 +1,16 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { IPendingSession, IStoredConversationState } from '../../../dist/es';
 
-export interface ConversationsState {
+export interface IConversationsState {
   pendingSessions: IPendingSession[],
-  activeConversations: { [key: string]: IStoredConversationState };}
+  activeConversations: IActiveConversationsState;
+}
 
-const initialState: ConversationsState = {
+export interface IActiveConversationsState {
+  [key: string]: IStoredConversationState;
+}
+
+const initialState: IConversationsState = {
   pendingSessions: [],
   activeConversations: {}
 }

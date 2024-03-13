@@ -3,7 +3,7 @@ import "./Softphone.css";
 import { startSoftphoneSession, endSession } from "../services/sdk-service";
 import { useSelector } from "react-redux";
 // TODO: put this in an interfaces file.
-import { ConversationsState } from "../features/conversationsSlice";
+import { IActiveConversationsState } from "../features/conversationsSlice";
 import useEventListners from "../hooks/useEventListeners";
 import { GuxButton, GuxCard, GuxTable } from "genesys-spark-components-react";
 import { IPendingSession } from "../../../dist/es/types/interfaces";
@@ -12,7 +12,7 @@ import StationDetails from "./StationDetails";
 export default function Softphone() {
   const [phoneNumber, setPhoneNumber] = useState("");
   useEventListners();
-  const conversations: ConversationsState = useSelector(
+  const conversations: IActiveConversationsState = useSelector(
     (state) => state.conversations.activeConversations
   );
   const pendingSessions = useSelector((state) => state.conversations.pendingSessions);
@@ -40,7 +40,13 @@ export default function Softphone() {
     } else {
       sdk.rejectPendingSession({ conversationId });
     }
+  }
 
+  function endAllConversations(): void {
+    Object.keys(conversations).forEach(key =>{
+      const conversationId = conversations[key].conversationId;
+      sdk.endSession({ conversationId: conversationId });
+    });
   }
 
   function createConversationsTable() {
@@ -69,19 +75,19 @@ export default function Softphone() {
               {Object.entries(conversations).map(([key, value]) => (
                 <tr key={key}>
                   <td>{value.conversationId}</td>
-                  <td>{value.session.id}</td>
-                  <td>{value.mostRecentCallState.direction}</td>
-                  <td>{value.session.sessionType}</td>
-                  <td>{value.session.state}</td>
-                  <td>{value.session.connectionState}</td>
+                  <td>{value.session?.id}</td>
+                  <td>{value.session?.sessionType}</td>
+                  <td>{value.mostRecentCallState?.direction}</td>
+                  <td>{value.session?.state}</td>
+                  <td>{value.session?.connectionState}</td>
                   <td>
-                    <GuxButton onClick={()=> handleMute(!value.mostRecentCallState.muted, value.conversationId)}>
-                      {value.mostRecentCallState.muted ? 'Unmute' : 'Mute'}
+                    <GuxButton onClick={()=> handleMute(!value.mostRecentCallState?.muted, value.conversationId)}>
+                      {value.mostRecentCallState?.muted ? 'Unmute' : 'Mute'}
                     </GuxButton>
                   </td>
                   <td>
                     <GuxButton onClick={()=> holdCall(!value.mostRecentCallState, value.conversationId)}>
-                      {value.mostRecentCallState.held ? 'Unhold' : 'Hold'}
+                      {value.mostRecentCallState?.held ? 'Unhold' : 'Hold'}
                     </GuxButton>
                   </td>
                   <td>
@@ -154,7 +160,7 @@ export default function Softphone() {
               <label className="gux-body-md-bold">Outbound Phone Call</label>
               <input type="text" onChange={(e) => setPhoneNumber(e.target.value)} />
               <GuxButton accent="primary" className="call-btn" onClick={placeCall}>Place Call</GuxButton>
-              <GuxButton accent="danger" className="end-btn">End All</GuxButton>
+              <GuxButton accent="danger" className="end-btn" onClick={endAllConversations}>End All</GuxButton>
             </div>
           </GuxCard>
           <GuxCard id="softphone-station" accent="raised">
