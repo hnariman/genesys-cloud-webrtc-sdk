@@ -153,22 +153,23 @@ export default function Softphone() {
   }
 
   return (
-    <div className="softphone-wrapper">
-      <div className="softphone-controls">
-        <GuxCard id="softphone-card" accent="raised">
+    <div className="softphone-panel-wrapper">
+      <div className="softphone-call-wrapper">
+        <div className="softphone-call-card">
+          <GuxCard id="softphone-call-content" accent="raised">
             <div className="softphone-call-content">
               <label className="gux-body-md-bold">Outbound Phone Call</label>
               <input type="text" onChange={(e) => setPhoneNumber(e.target.value)} />
               <GuxButton accent="primary" className="call-btn" onClick={placeCall}>Place Call</GuxButton>
-              <GuxButton accent="danger" className="end-btn" onClick={endAllConversations}>End All</GuxButton>
+              <GuxButton accent="danger" className="end-all-btn" onClick={endAllConversations}>End All</GuxButton>
             </div>
           </GuxCard>
-          <GuxCard id="softphone-station" accent="raised">
-            <div className="softphone-call-content">
-              <StationDetails></StationDetails>
-            </div>
-          </GuxCard>
+        </div>
+        <div className="softphone-station-card">
+          <StationDetails></StationDetails>
+        </div>
       </div>
+
       <div className="softphone-sessions">{createConversationsTable()}</div>
       <div className="softphone-sessions">{createPendingSessionsTable()}</div>
     </div>

@@ -1,12 +1,16 @@
-import { GuxTable } from "genesys-spark-components-react";
+import { GuxCard, GuxTable } from "genesys-spark-components-react";
 import { useState } from "react";
 import './StationDetails.css';
 
 export default function StationDetails() {
   const [stationDetails] = useState((window as any)?.sdk?.station);
 
+  // if (!stationDetails) {
+  //   return null;
+  // }
+
   return (
-    <div className="station-details-wrapper">
+    <GuxCard className="station-details-wrapper">
       <p className="gux-body-md-bold">Station Details</p>
       <GuxTable>
         <table className="station-details-table" slot="data">
@@ -34,6 +38,6 @@ export default function StationDetails() {
             </tbody>
         </table>
       </GuxTable>
-    </div>
+    </GuxCard>
   );
 }

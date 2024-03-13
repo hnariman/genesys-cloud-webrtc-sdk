@@ -2,7 +2,8 @@
   display: flex;
   justify-content: flex-start;
   flex-wrap: wrap;
-  flex-direction: column;
+  flex-grow: 1;
+  width: 100%;
 }
 
 .gux-body-md-bold {

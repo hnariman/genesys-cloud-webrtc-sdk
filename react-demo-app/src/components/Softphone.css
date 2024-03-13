@@ -1,36 +1,51 @@
-.softphone-wrapper {
+.softphone-panel-wrapper {
   display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-  height: 85%;
-  width: 85%;
-  border: 2px solid black;
-  border-radius: 10px;
+  flex-wrap: wrap;
+  height: 100%;
+  width: 100%;
   box-sizing: border-box;
-  background-color: #e8ebf7;
-  overflow: auto;
+  background-color:  #e8ebf7;
+  align-content: flex-start;
+  border-radius: 10px;
 }
 
-#softphone-card,
-#softphone-station {
+.softphone-call-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  flex-grow: 1;
+  flex-shrink: 1;
+  box-sizing: border-box;
+}
+
+.softphone-call-card {
+  display: flex;
+  flex-grow: 0;
+  flex-shrink: 1;
+  box-sizing: border-box;
   margin: 10px;
 }
 
-.softphone-controls {
+.softphone-station-card {
   display: flex;
-  justify-content: center;
-  width: 100%;
-}
-
-.call-btn,
-.end-btn {
-  margin: 5px 0;
+  flex-grow: 1;
+  flex-shrink: 1;
+  box-sizing: border-box;
+  margin: 10px;
 }
 
 .softphone-call-content {
   display: flex;
   flex-direction: column;
-  height: 125px;
-  width: 100%;
+}
+
+.softphone-sessions {
+  display: flex;
+  flex-grow: 1;
+  flex-shrink: 1;
+  box-sizing: border-box;
+  margin: 10px;
+}
+
+.call-btn, .end-all-btn {
+  margin: 5px;
 }
