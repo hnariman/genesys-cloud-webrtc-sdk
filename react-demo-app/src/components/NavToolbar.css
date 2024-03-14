@@ -6,7 +6,6 @@
   width: 100%;
   height: 150px;
   box-sizing: border-box;
-  border: 1px solid grey;
   border-radius: 0 0 10px 10px;
   background-color: #e8ebf7;
 }
@@ -27,6 +26,5 @@
 .nav-buttons {
   display: flex;
   justify-content: center;
-  align-items: center;
   width: 100%;
 }

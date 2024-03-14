@@ -12,8 +12,7 @@
 .softphone-call-wrapper {
   display: flex;
   flex-wrap: wrap;
-  flex-grow: 1;
-  flex-shrink: 1;
+  flex: 1 1 100%;
   box-sizing: border-box;
 }
 
@@ -40,8 +39,7 @@
 
 .softphone-sessions {
   display: flex;
-  flex-grow: 1;
-  flex-shrink: 1;
+  flex: 1 1 100%;
   box-sizing: border-box;
   margin: 10px;
 }
