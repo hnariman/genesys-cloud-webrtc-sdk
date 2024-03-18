@@ -28,13 +28,15 @@ import {
   VideoMediaSession,
   IVideoResolution,
   JWTDetails,
-  ISdkFullConfig
+  ISdkFullConfig,
+  ISessionBackgroundRequest
 } from './types/interfaces';
 import {
   setupStreamingClient,
   proxyStreamingClientEvents
 } from './client-private';
 import { requestApi, createAndEmitSdkError, defaultConfigOption, requestApiWithRetry } from './utils';
+import { beginVGBProcess } from './media/vbg-utils';
 import { setupLogging } from './logging';
 import { SdkErrorTypes, SessionTypes } from './types/enums';
 import { SessionManager } from './sessions/session-manager';
@@ -173,7 +175,8 @@ export class GenesysCloudWebrtcSdk extends (EventEmitter as { new(): StrictEvent
           audioDeviceId: defaultsOptions.audioDeviceId || null,
           audioVolume: defaultConfigOption(defaultsOptions.audioVolume, 100),
           outputDeviceId: defaultsOptions.outputDeviceId || null,
-          monitorMicVolume: !!defaultsOptions.monitorMicVolume // default to false
+          monitorMicVolume: !!defaultsOptions.monitorMicVolume, // default to false
+          virtualBackground: defaultsOptions.virtualBackground //default to undefined
         }
       }
     };
@@ -281,7 +284,7 @@ export class GenesysCloudWebrtcSdk extends (EventEmitter as { new(): StrictEvent
       }
 
       await Promise.all(activateSessionTypes);
-      (this.headset as HeadsetProxyService).initialize();
+      await (this.headset as HeadsetProxyService).initialize();
 
       this.emit('ready');
     } catch (err) {
@@ -748,6 +751,21 @@ export class GenesysCloudWebrtcSdk extends (EventEmitter as { new(): StrictEvent
    */
   async setAudioMute (muteOptions: ISessionMuteRequest): Promise<void> {
     await this.sessionManager.setAudioMute(muteOptions);
+  }
+
+  /**
+   * Toggles the virtual background on and off as well as what the background is
+   * This should be called:
+   * - If VGB (Virtual Background) is toggled on or off
+   * - If VGB type is changed (such as blur to image or vice versa)
+   * - If VGB type is image and the provided image has changed
+   * @param vbgOptions object containing `virtualBackground` value (undefined, "blur", "image", ),
+   * conversationId, and image value if one is necessary for background image
+   *
+   * @returns a promise that fulfills once the VBG request has completed
+   */
+  async setVirtualBackground (vbgOptions: ISessionBackgroundRequest): Promise<void> {
+    await this.sessionManager.setVirtualBackground(vbgOptions);
   }
 
   /**

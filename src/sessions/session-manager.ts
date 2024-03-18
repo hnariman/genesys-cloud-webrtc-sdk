@@ -20,7 +20,8 @@ import {
   IConversationHeldRequest,
   IPendingSessionActionParams,
   VideoMediaSession,
-  IActiveConversationDescription
+  IActiveConversationDescription,
+  ISessionBackgroundRequest
 } from '../types/interfaces';
 import { ConversationUpdate } from '../conversations/conversation-update';
 import { SessionTypesAsStrings } from 'genesys-cloud-streaming-client';
@@ -438,6 +439,13 @@ export class SessionManager {
 
     const handler = this.getSessionHandler({ sessionType: session.sessionType });
     await handler.setAudioMute(session, params);
+  }
+
+  async setVirtualBackground (params: ISessionBackgroundRequest): Promise<void> {
+    const session = this.getSession({ conversationId: params.conversationId });
+
+    const handler = this.getSessionHandler({ sessionType: session.sessionType });
+    await handler.setVirtualBackground(session, params);
   }
 
   async setConversationHeld (params: IConversationHeldRequest): Promise<void> {

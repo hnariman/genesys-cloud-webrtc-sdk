@@ -17,6 +17,7 @@ import {
   IUpdateOutgoingMedia,
   IConversationHeldRequest,
   IActiveConversationDescription,
+  ISessionBackgroundRequest,
 } from '../types/interfaces';
 
 type ExtendedHTMLAudioElement = HTMLAudioElement & {
@@ -208,6 +209,14 @@ export default abstract class BaseSessionHandler {
       sessionId: session.id,
       params
     });
+  }
+
+  async setVirtualBackground (session: IExtendedMediaSession, params: ISessionBackgroundRequest): Promise<any> {
+    throw createAndEmitSdkError.call(this.sdk, SdkErrorTypes.not_supported, `Virtual Background not supported for sessionType ${session.sessionType}`, {
+      conversationId: session.conversationId,
+      sessionId: session.id,
+      params
+    })
   }
 
   /**

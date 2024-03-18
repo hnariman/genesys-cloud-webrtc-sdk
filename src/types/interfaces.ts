@@ -388,6 +388,15 @@ export interface ISdkFullConfig {
      * Optional: defaults to `false`
      */
     monitorMicVolume?: boolean;
+
+    /**
+     * What type of virtual background the user would like, if any.
+     * undefined - no virtual background is applied
+     * blur - the background is blurred but the user stays clear
+     * image - using a provided image, the background is replaced by it
+     * Optional: defaults to `undefined`
+     */
+    virtualBackground?: undefined | 'blur' | 'image'
   };
 }
 
@@ -828,6 +837,12 @@ export interface IConversationHeldRequest {
   held: boolean;
   /** boolean to show if the event needs to pass along to the headset */
   fromHeadset?: boolean;
+}
+
+export interface ISessionBackgroundRequest {
+  conversationId: string;
+  virtualBackground?: undefined | "blur" | 'image'
+  virtualBackgroundImage?: string
 }
 
 /**

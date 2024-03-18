@@ -14,7 +14,8 @@ import {
   IMediaRequestOptions,
   IStartVideoSessionParams,
   VideoMediaSession,
-  MemberStatusMessage
+  MemberStatusMessage,
+  ISessionBackgroundRequest
 } from '../types/interfaces';
 import BaseSessionHandler from './base-session-handler';
 import { SessionTypes, SdkErrorTypes, CommunicationStates } from '../types/enums';
@@ -22,6 +23,7 @@ import { createNewStreamWithTrack, logDeviceChange } from '../media/media-utils'
 import { createAndEmitSdkError, requestApi, isVideoJid, isPeerVideoJid, logPendingSession } from '../utils';
 import { ConversationUpdate } from '../conversations/conversation-update';
 import { JsonRpcMessage } from 'genesys-cloud-streaming-client';
+import { beginVGBProcess } from '../media/vbg-utils';
 
 /**
  * speakers is an array of audio track ids sending audio
@@ -590,6 +592,17 @@ export class VideoSessionHandler extends BaseSessionHandler {
       this.log('info', 'switching mic device', { sessionId: session.id, conversationId: session.conversationId, sessionType: session.sessionType });
 
       await this.sdk.updateOutgoingMedia({ audioDeviceId: params.unmuteDeviceId });
+    }
+  }
+
+  async setVirtualBackground (session: IExtendedMediaSession, params: ISessionBackgroundRequest) {
+    let track;
+    if (!params.virtualBackground) {
+      track = session._outboundStream.getVideoTracks()[0];
+      await this.addReplaceTrackToSession(session, track);
+    } else {
+      track = (await beginVGBProcess(session._outboundStream)).getVideoTracks()[0];
+      await this.addReplaceTrackToSession(session, track);
     }
   }
 
