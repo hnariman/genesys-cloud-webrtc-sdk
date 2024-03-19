@@ -11,6 +11,7 @@ import {
   ISdkConversationUpdateEvent,
   IStoredConversationState,
 } from "../../../dist/es";
+import { updateLocalVideo } from "../features/videoSlice";
 
 interface IConversationsToAddOrRemove {
   conversationsToAdd: {
@@ -104,6 +105,7 @@ export default function useEventListners() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, navigate, audioVideoElements]);
 
+  // TODO: probably need to extract some of these into their own custom hooks.
   // Event handlers.
   const handleReady = () => navigate("/dashboard");
   const handlePending = (event) => {
@@ -120,13 +122,25 @@ export default function useEventListners() {
     dispatch(removePendingSession(event.detail));
   const handledPendingSession = (event) =>
     dispatch(removePendingSession(event.detail));
-  const handleSessionStarted = (event) => {
+  const handleSessionStarted = async (event) => {
     const session = event.detail;
     if (session.sessionType === "collaborateVideo") {
       const audioElement = audioVideoElements.audioElement;
       const videoElement = audioVideoElements.videoElement;
       if (audioElement && videoElement) {
-        sdk.acceptSession({ conversationId: session.conversationId, audioElement, videoElement });
+        let mediaStream = new MediaStream();
+        mediaStream = await sdk.media.startMedia();
+
+        session.once('incomingMedia', () => {
+          const localVideoAttr = {
+            autoPlay: true,
+            volume: 0,
+            srcObject: session._outboundStream
+          }
+          dispatch(updateLocalVideo(localVideoAttr))
+          console.warn(audioVideoElements.localVideoElement);
+        });
+        sdk.acceptSession({ conversationId: session.conversationId, audioElement, videoElement, mediaStream });
       }
     }
   };

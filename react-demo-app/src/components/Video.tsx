@@ -10,12 +10,13 @@ export default function Video() {
   const [roomJid, setRoomJid] = useState("");
   const [userJid, setUserJid] = useState("");
   const videoRef = useRef(null);
+  const localVideoRef = useRef(null);
   const audioRef = useRef(null);
   const dispatch = useDispatch();
   useEventListners();
 
   useEffect(() => {
-    dispatch(setElements({ audio: audioRef.current, video: videoRef.current }));
+    dispatch(setElements({ audio: audioRef.current, video: videoRef.current, localVideo: localVideoRef.current }));
   }, [dispatch]);
 
   function startOrJoinVideoConference(): void {
@@ -53,7 +54,7 @@ export default function Video() {
         <GuxCard>
           <div className="video-card">
             <h4>Local View</h4>
-            <video id="self-view"></video>
+            <video ref={localVideoRef} id="self-view"></video>
           </div>
         </GuxCard>
         <GuxCard>
