@@ -106,10 +106,11 @@ function handleSessionStarted(session: GenesysCloudMediaSession) {
   //   }
   // ];
 
-  webrtcSdk.acceptSession({
-    conversationId: session.conversationId,
-    sessionType: session.sessionType,
-  });
+  // webrtcSdk.acceptSession({
+  //   conversationId: session.conversationId,
+  //   sessionType: session.sessionType,
+  // });
+  eventService.dispatchEvent("sessionStarted", session);
 }
 
 function handleConnected() {

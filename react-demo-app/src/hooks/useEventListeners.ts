@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { eventService } from "../services/event-service";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   removePendingSession,
   updateConversations,
@@ -22,8 +22,10 @@ interface IConversationsToAddOrRemove {
 }
 
 export default function useEventListners() {
+  const sdk = (window as any).sdk;
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const audioVideoElements = useSelector((state) => state.video);
 
   function createConversationsList(event: ISdkConversationUpdateEvent) {
     const conversationsToAddOrRemove: IConversationsToAddOrRemove = {
@@ -100,7 +102,7 @@ export default function useEventListners() {
     };
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch, navigate]);
+  }, [dispatch, navigate, audioVideoElements]);
 
   // Event handlers.
   const handleReady = () => navigate("/dashboard");
@@ -118,8 +120,16 @@ export default function useEventListners() {
     dispatch(removePendingSession(event.detail));
   const handledPendingSession = (event) =>
     dispatch(removePendingSession(event.detail));
-  const handleSessionStarted = (event) =>
-    console.warn("session started inside hook", event);
+  const handleSessionStarted = (event) => {
+    const session = event.detail;
+    if (session.sessionType === "collaborateVideo") {
+      const audioElement = audioVideoElements.audioElement;
+      const videoElement = audioVideoElements.videoElement;
+      if (audioElement && videoElement) {
+        sdk.acceptSession({ conversationId: session.conversationId, audioElement, videoElement });
+      }
+    }
+  };
   const handleSdkError = (event) =>
     console.warn("sdk error inside hook", event);
   const handleSessionEnded = (event) =>

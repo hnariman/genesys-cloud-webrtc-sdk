@@ -156,7 +156,7 @@ export default function Softphone() {
     <div className="softphone-panel-wrapper">
       <div className="softphone-call-wrapper">
         <div className="softphone-call-card">
-          <GuxCard id="softphone-call-content" accent="raised">
+          <GuxCard accent="raised">
             <div className="softphone-call-content">
               <label className="gux-body-md-bold">Outbound Phone Call</label>
               <input type="text" onChange={(e) => setPhoneNumber(e.target.value)} />

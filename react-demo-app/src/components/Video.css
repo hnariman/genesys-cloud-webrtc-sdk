@@ -1,0 +1,32 @@
+.video-panel-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  flex: 1 1 100%;
+  min-height: 100%;
+  box-sizing: border-box;
+  background-color:  #f2f2f3;
+  border-radius: 10px;
+  justify-content: flex-start;
+  flex-direction: column;
+  padding: 10px;
+}
+gux-card {
+  width: 100%;
+}
+
+.video-jid-input {
+  width: 400px;
+}
+video {
+  box-sizing: border-box;
+  border: 1px solid black;
+}
+.video-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.video-player {
+  display: flex;
+  width: 100%;
+}
