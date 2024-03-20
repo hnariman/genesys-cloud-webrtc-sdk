@@ -26,7 +26,7 @@ async function startSegmentationTask () {
     await createImageSegmenter();
 
     const input = await createImageBitmap(video);
-    let frameId = requestAnimationFrameId || 0;
+    const frameId = requestAnimationFrameId || 0;
     const segmentationMask = await imageSegmenter.segmentForVideo(
         input,
         frameId
@@ -185,7 +185,7 @@ function createShaderProgram (canvasWebGL2Context) {
             textureSampler: canvasWebGL2Context.getUniformLocation(program, 'textureSampler'),
         },
     };
-};
+}
 
 function createVertexBuffer (canvasWebGL2Context) {
     if (!canvasWebGL2Context) {
@@ -199,7 +199,7 @@ function createVertexBuffer (canvasWebGL2Context) {
         canvasWebGL2Context.STATIC_DRAW
     );
     return vertexBuffer;
-};
+}
 
 function createCopyTextureToCanvas(canvas) {
     const canvasWebGL2Context = canvas.getContext('webgl2');
