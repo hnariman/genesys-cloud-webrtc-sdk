@@ -17,6 +17,8 @@
     ],
     "rules": {
         "@typescript-eslint/no-var-requires": 1,
-        "no-prototype-builtins": 0
+        "no-prototype-builtins": 0,
+        "@typescript-eslint/no-explicit-any": "warn",
+        "@typescript-eslint/no-unused-vars": "warn"
     }
 }

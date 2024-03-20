@@ -6,7 +6,6 @@ import { SessionTypes, SdkErrorTypes } from '../types/enums';
 import { checkAllTracksHaveEnded } from '../media/media-utils';
 import { createAndEmitSdkError, isAcdJid } from '../utils';
 import { ConversationUpdate } from '../conversations/conversation-update';
-import { JingleReason } from '..';
 
 export class ScreenShareSessionHandler extends BaseSessionHandler {
   private _screenStreamPromise: Promise<MediaStream>;
