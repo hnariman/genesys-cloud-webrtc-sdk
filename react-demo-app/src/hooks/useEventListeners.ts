@@ -11,7 +11,7 @@ import {
   ISdkConversationUpdateEvent,
   IStoredConversationState,
 } from "../../../dist/es";
-import { updateLocalVideo } from "../features/videoSlice";
+import { updateLocalVideo, addSession, removeSession } from "../features/videoSlice";
 
 interface IConversationsToAddOrRemove {
   conversationsToAdd: {
@@ -125,29 +125,39 @@ export default function useEventListners() {
   const handleSessionStarted = async (event) => {
     const session = event.detail;
     if (session.sessionType === "collaborateVideo") {
+      dispatch(addSession(session));
       const audioElement = audioVideoElements.audioElement;
       const videoElement = audioVideoElements.videoElement;
       if (audioElement && videoElement) {
         let mediaStream = new MediaStream();
         mediaStream = await sdk.media.startMedia();
 
-        session.once('incomingMedia', () => {
+        session.once("incomingMedia", () => {
           const localVideoAttr = {
             autoPlay: true,
             volume: 0,
-            srcObject: session._outboundStream
-          }
-          dispatch(updateLocalVideo(localVideoAttr))
+            srcObject: session._outboundStream,
+          };
+          dispatch(updateLocalVideo(localVideoAttr));
           console.warn(audioVideoElements.localVideoElement);
         });
-        sdk.acceptSession({ conversationId: session.conversationId, audioElement, videoElement, mediaStream });
+        sdk.acceptSession({
+          conversationId: session.conversationId,
+          audioElement,
+          videoElement,
+          mediaStream,
+        });
       }
     }
   };
   const handleSdkError = (event) =>
     console.warn("sdk error inside hook", event);
-  const handleSessionEnded = (event) =>
-    console.warn("session ended inside hook", event);
+  const handleSessionEnded = (event) =>{
+    const session = event.detail;
+    if (session.sessionType === "collaborateVideo") {
+      dispatch(removeSession());
+    }
+  }
   const handleDisconnected = (event) =>
     console.warn("disconnected inside hook", event);
   const handleConnected = (event) =>

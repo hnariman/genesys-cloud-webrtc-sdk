@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setElements } from "../features/videoSlice";
 import "./Video.css";
 import { GuxButton, GuxCard } from "genesys-spark-components-react";
@@ -13,7 +13,11 @@ export default function Video() {
   const localVideoRef = useRef(null);
   const audioRef = useRef(null);
   const dispatch = useDispatch();
+  const activeSession = useSelector(
+    (state) => state.video.activeSession
+  );
   useEventListners();
+
 
   useEffect(() => {
     dispatch(setElements({ audio: audioRef.current, video: videoRef.current, localVideo: localVideoRef.current }));
@@ -21,11 +25,19 @@ export default function Video() {
 
   function startOrJoinVideoConference(): void {
     console.warn("test", roomJid, userJid);
-    if (!roomJid && !roomJid) {
-      console.error("Enter a roomjid or userjid start a video conference.");
+    if (!roomJid) {
+      alert("Enter a roomjid or userjid start a video conference.");
     }
 
     sdk.startVideoConference(roomJid);
+  }
+
+  function endConference(): void {
+    if (!activeSession) {
+      alert("No active conference to end.");
+    }
+    const conversationId = activeSession.conversationId;
+    sdk.endSession({ conversationId });
   }
   return (
     <div className="video-panel-wrapper">
@@ -48,6 +60,9 @@ export default function Video() {
         </div>
         <GuxButton accent="primary" onClick={startOrJoinVideoConference}>
           Start
+        </GuxButton>
+        <GuxButton accent="danger" onClick={endConference}>
+          End
         </GuxButton>
       </GuxCard>
       <div className="video-player">

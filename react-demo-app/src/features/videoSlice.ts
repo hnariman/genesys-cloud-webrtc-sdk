@@ -3,7 +3,8 @@ import { createSlice } from '@reduxjs/toolkit';
 const initialState = {
   videoElement: HTMLVideoElement,
   audioElement: HTMLAudioElement,
-  localVideoElement: HTMLVideoElement
+  localVideoElement: HTMLVideoElement,
+  activeSession: {}
 }
 
 export const videoSlice = createSlice({
@@ -21,9 +22,15 @@ export const videoSlice = createSlice({
         state.localVideoElement.volume = action.payload.volume;
         state.localVideoElement.srcObject = action.payload.srcObject;
       }
+    },
+    addSession(state, action) {
+      state.activeSession = action.payload;
+    },
+    removeSession(state) {
+      state.activeSession = {};
     }
   }
 });
 
-export const { setElements, updateLocalVideo } = videoSlice.actions;
+export const { setElements, updateLocalVideo, addSession, removeSession } = videoSlice.actions;
 export default videoSlice.reducer;
