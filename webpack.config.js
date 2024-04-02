@@ -55,7 +55,8 @@ module.exports = (env) => {
         corejs: 3
       }],
       '@babel/plugin-proposal-class-properties',
-      '@babel/plugin-transform-property-mutators'
+      '@babel/plugin-transform-property-mutators',
+      '@babel/plugin-transform-optional-chaining'
     ]
   };
 
