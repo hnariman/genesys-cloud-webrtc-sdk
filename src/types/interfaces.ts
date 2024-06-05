@@ -24,7 +24,7 @@ declare module 'genesys-cloud-streaming-client' {
 export type KeyFrom<T extends { [key: string]: any }, key extends keyof T> = key;
 
 /**
- * SDK configuration options for construction a new instance
+ * SDK configuration options for constructing a new instance
  */
 export interface ISdkFullConfig {
   /**
@@ -222,10 +222,24 @@ export interface ISdkFullConfig {
    * disables the negotiation between the user's different client which ensures
    * that only one client effectively has headset call controls. This flag will
    * be temporary and may be removed without notice.
-   * 
+   *
    * Optional: defaults to `false`
    */
   disableHeadsetControlsOrchestration?: boolean;
+
+  /**
+   * Genesys internal use only - non-Genesys apps that pass in custom headers will be ignored.
+   * Used for telemetry purposes only.
+  */
+  customHeaders?: ICustomHeader;
+
+  /**
+   * Controls whether to attempt to use `ping` stanzas from the server or the client.
+   * When `true`, `ping` stanzas from the server will be requested. If `false` (or unsupported by the server), the client will send `ping` stanzas.
+   *
+   * Optional: default `true`
+   */
+  useServerSidePings?: boolean;
 
   /** defaults for various SDK functionality */
   defaults?: {
@@ -1275,6 +1289,10 @@ export interface IDataChannelBandwidthAndRates {
 
   /** data rate, in bits per second, of the streams being sent from the client to mms */
   rateFromClient: number;
+}
+
+export interface ICustomHeader {
+  [header: string]: string;
 }
 
 export type DefaultHeadsetRequestType = 'prioritized' | 'standard';

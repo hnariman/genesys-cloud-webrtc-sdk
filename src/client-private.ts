@@ -22,7 +22,8 @@ export async function setupStreamingClient (this: GenesysCloudWebrtcSdk): Promis
     environment,
     originAppId,
     originAppName,
-    originAppVersion
+    originAppVersion,
+    customHeaders
   } = this._config;
 
   const connectionOptions: IClientOptions = {
@@ -34,6 +35,7 @@ export async function setupStreamingClient (this: GenesysCloudWebrtcSdk): Promis
     appVersion: originAppVersion || this.VERSION,
     appId: originAppId || this.logger.clientId,
     optOutOfWebrtcStatsTelemetry: optOutOfTelemetry,
+    customHeaders: customHeaders || undefined
   };
 
   if (this._personDetails) {
@@ -53,6 +55,8 @@ export async function setupStreamingClient (this: GenesysCloudWebrtcSdk): Promis
   if (this.isJwtAuth) {
     connectionOptions.jwt = this._config.jwt;
   }
+
+  connectionOptions.useServerSidePings = !!this._config.useServerSidePings;
 
   connectionOptions.logFormatters = this._config.logFormatters;
   this.logger.debug('Streaming client WebSocket connection options', connectionOptions);

@@ -3,7 +3,39 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-# [Unreleased](https://github.com/MyPureCloud/genesys-cloud-webrtc-sdk/compare/v9.0.4...HEAD)
+# [Unreleased](https://github.com/MyPureCloud/genesys-cloud-webrtc-sdk/compare/v9.1.0...HEAD)
+
+# [v9.1.0](https://github.com/MyPureCloud/genesys-cloud-webrtc-sdk/compare/v9.0.8...v9.1.0)
+### Fixed
+* [STREAM-73](https://inindca.atlassian.net/browse/STREAM-73) - fix for issue where Sennheiser/EPOS devices maintained a mute state when starting a new call
+* [STREAM-74](https://inindca.atlassian.net/browse/STREAM-73) - fix for issue where the WebHID permission modal popped up constantly for Jabra
+### Changed
+* [no-jira] Use default of `false` for `useServerSidePings`
+* [WEBRTCS-1106](https://inindca.atlassian.net/browse/WEBRTCS-1106) - bump streaming client for reinvite functionality
+* [STREAM-82](https://inindca.atlassian.net/browse/STREAM-82) - Updated lots of dependencies. For full list, see attached ticket.
+
+# [v9.0.8](https://github.com/MyPureCloud/genesys-cloud-webrtc-sdk/compare/v9.0.7...v9.0.8)
+### Changed
+* [PCM-2360](https://inindca.atlassian.net/browse/PCM-2360) - removed session object from certain logs to reduce size
+* [PCM-2352](https://inindca.atlassian.net/browse/PCM-2352) - Add option to control whether to use server-side pinging
+* [no-jira] Use default of `true` for `useServerSidePings`
+
+# [v9.0.7](https://github.com/MyPureCloud/genesys-cloud-webrtc-sdk/compare/v9.0.6...v9.0.7)
+### Changed
+* [no-jira] Update uuid to v9.0.1
+
+# [v9.0.6](https://github.com/MyPureCloud/genesys-cloud-webrtc-sdk/compare/v9.0.5...v9.0.6)
+### Added
+* [PCM-2345](https://inindca.atlassian.net/browse/PCM-2345) - Added ability to pass in custom headers for telemetry purposes (internal use only). Bumped streaming-client and client-logger.
+
+# [v9.0.5](https://github.com/MyPureCloud/genesys-cloud-webrtc-sdk/compare/v9.0.4...v9.0.5)
+### Added
+* [no-jira] Bump to `Softphone Vendor Headsets` to support two new vendors: VBeT and CyberAcoustics
+### Fixed
+* [no-jira] Removed check for persistent connection to allow orchestration rejection for active calls and idle persistent connection
+* [PCM-2319](https://inindca.atlassian.net/browse/PCM-2319) - move typescript to a dev dependency
+* [PCM-1826](https://inindca.atlassian.net/browse/PCM-1826) - Fixed screen sharing in safari
+
 # [v9.0.4](https://github.com/MyPureCloud/genesys-cloud-webrtc-sdk/compare/v9.0.3...v9.0.4)
 ### Changed
 * [PCM-2312](https://inindca.atlassian.net/browse/PCM-2312) bump logger version

@@ -2,7 +2,7 @@ import { EventEmitter } from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import StreamingClient, { HttpClient } from 'genesys-cloud-streaming-client';
 import Logger from 'genesys-cloud-client-logger';
-import jwtDecode from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 
 import {
   ISdkConfig,
@@ -161,7 +161,8 @@ export class GenesysCloudWebrtcSdk extends (EventEmitter as { new(): StrictEvent
         optOutOfTelemetry: options.optOutOfTelemetry || false, // default false
         allowedSessionTypes,
         useHeadsets: options.useHeadsets || false, // default false
-
+        customHeaders: options.customHeaders,
+        useServerSidePings: defaultConfigOption(options.useServerSidePings, false),
         /* sdk defaults */
         defaults: {
           ...defaultsOptions,
@@ -658,7 +659,7 @@ export class GenesysCloudWebrtcSdk extends (EventEmitter as { new(): StrictEvent
           jabberId: decoded.data.jid
         }
       };
-  
+
       this._orgDetails = {
         id: decoded.org,
         name: null
