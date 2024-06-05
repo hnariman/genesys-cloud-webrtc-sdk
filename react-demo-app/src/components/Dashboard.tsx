@@ -3,24 +3,16 @@ import Devices from './Devices';
 import Softphone from './Softphone';
 import User from './User';
 import NavToolbar from './NavToolbar';
+import Video from './Video';
 
 export default function Dashboard() {
   return (
     <div className="dashboard-wrapper">
       <NavToolbar></NavToolbar>
       <div className="panels">
-        <Softphone></Softphone>
+        {/* <Softphone></Softphone> */}
+        <Video></Video>
       </div>
-      {/* <User></User> */}
-      {/* <div className="dashboard-user-wrapper">
-        <div className="dashboard-user">
-          <div>{personDetails.name}</div>
-          <div>{personDetails.id}</div>
-          <div>{personDetails.username}</div>
-          <div>{personDetails.chat.jabberId}</div>
-        </div>
-      </div> */}
-      {/* <Devices></Devices> */}
     </div>
   )
 }

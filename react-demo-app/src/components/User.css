@@ -1,0 +1,35 @@
+.user-wrapper {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-direction: column;
+  height: 85%;
+  width: 85%;
+  border: 2px solid black;
+  border-radius: 10px;
+  box-sizing: border-box;
+  box-shadow: 5px 5px 5px #fecfcb;
+}
+
+.user-content {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  height: 25%;
+  width: 100%;
+  border-bottom: 2px solid black;
+  box-sizing: border-box;
+  border-radius: 10px;
+  box-shadow: 2px 2px 2px grey;
+}
+
+.person-details, .org-details, .station-details, .config-details {
+  text-align: left;
+  width: 100%;
+}
+
+table, td, th {
+  border-collapse: collapse;
+  border: 1px solid black;
+  padding: 5px 10px 5px 10px;
+}

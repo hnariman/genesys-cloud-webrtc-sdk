@@ -110,6 +110,7 @@ export default function Softphone() {
   }
 
   function createPendingSessionsTable() {
+    console.warn('we are creating the pending table:', pendingSessions);
     if (!pendingSessions || !pendingSessions.length) {
       return;
     }
