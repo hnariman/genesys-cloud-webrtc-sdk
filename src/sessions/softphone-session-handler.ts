@@ -107,8 +107,28 @@ export class SoftphoneSessionHandler extends BaseSessionHandler {
   }
 
   async handlePropose (pendingSession: IPendingSession): Promise<void> {
-    await super.handlePropose(pendingSession);
+    const isPrivAnswerAuto = pendingSession.privAnswerMode === 'Auto';
+    const eagerConnectionEstablishmentMode = this.sdk._config.eagerPersistentConnectionEstablishment;
+    
+    // if eagerPersistentConnectionEstablishment==='none' then we want to completely swallow the propose
+    const shouldSwallowPropose = isPrivAnswerAuto && eagerConnectionEstablishmentMode === 'none';
+    if (shouldSwallowPropose) {
+      this.log('info', 'received propose but eagerPersistentConnectionEstablishment is "none" so propose will be ignored');
+      return;
+    }
 
+    const shouldAutoAnswerPrivately = isPrivAnswerAuto && eagerConnectionEstablishmentMode === 'auto';
+
+    // we want to emit the pendingSession event in all cases except when eagerConnectionEstablishmentMode === auto and this is a privAnswerMode call
+    if (!shouldAutoAnswerPrivately) {
+      await super.handlePropose(pendingSession);
+    } else if (shouldAutoAnswerPrivately) {
+      if (shouldAutoAnswerPrivately) {
+        return await this.proceedWithSession(pendingSession);
+      }
+    }
+
+    // calls will can be marked as auto-answer or priv-answer-mode: Auto, but never both
     if (pendingSession.autoAnswer) {
       if (this.sdk._config.disableAutoAnswer) {
         this.log('info', 'received and autoAnswer tagged propose but sdk has disableAutoAnswer.', { sessionId: pendingSession?.id, conversationId: pendingSession.conversationId });
