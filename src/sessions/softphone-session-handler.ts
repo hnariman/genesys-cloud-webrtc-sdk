@@ -15,7 +15,8 @@ import {
   IStoredConversationState,
   ISdkConversationUpdateEvent,
   IConversationHeldRequest,
-  IActiveConversationDescription
+  IActiveConversationDescription,
+  IExtendedPendingSession
 } from '../types/interfaces';
 import { SessionTypes, SdkErrorTypes, JingleReasons, CommunicationStates } from '../types/enums';
 import { attachAudioMedia, logDeviceChange, createUniqueAudioMediaElement } from '../media/media-utils';
@@ -118,6 +119,30 @@ export class SoftphoneSessionHandler extends BaseSessionHandler {
     }
   }
 
+  async handleRealProposeAfterFakePropose (existingPendingSession: IExtendedPendingSession, realPendingSession: IPendingSession): Promise<void> {
+    const loggingParams = { sessionId: realPendingSession.sessionId, conversationId: realPendingSession.conversationId }
+    
+    // update the sessionId
+    this.log('info', `found an existingSession matching propose's conversationId, updating existingSession.sessionId to match`, { ...loggingParams, existingSessionId: existingPendingSession.id });
+    existingPendingSession.sessionId = realPendingSession.sessionId;
+    existingPendingSession.id = realPendingSession.id;
+
+    // if the session was already accepted with the previous sessionId, accept it again.
+    if (existingPendingSession.accepted) {
+      this.log('info', `fake existing pendingSession was already accepted, "proceeding" again with the real sessionId`, { sessionId: realPendingSession.sessionId, conversationId: realPendingSession.conversationId });
+      return this.proceedWithSession(existingPendingSession);
+    }
+
+    // if the auto answer is different, we need to cancel the "existing" pending session and emit a new one with the auto answer present
+    if (existingPendingSession.autoAnswer !== realPendingSession.autoAnswer) {
+      this.log('info', `real session is auto answer, canceling fake pendingSession and replacing it with the real one`, { ...loggingParams, existingSessionId: existingPendingSession.id });
+      this.sessionManager.onCancelPendingSession(existingPendingSession.id, existingPendingSession.conversationId);
+
+      this.sessionManager.pendingSessions.push(realPendingSession);
+      await this.handlePropose(realPendingSession)
+    }
+  }
+
   getActiveConversations (): IActiveConversationDescription[] {
     const currentConversations = this.lastEmittedSdkConversationEvent?.current || [];
 
@@ -214,7 +239,7 @@ export class SoftphoneSessionHandler extends BaseSessionHandler {
 
         /* only emit `pendingSession` if we already have an active session */
         if (session && session === this.activeSession) {
-          const pendingSession: IPendingSession = {
+          const pendingSession: IExtendedPendingSession = {
             id: session.id,
             sessionId: session.id,
             autoAnswer: isOutbound,
@@ -223,7 +248,8 @@ export class SoftphoneSessionHandler extends BaseSessionHandler {
             originalRoomJid: session.originalRoomJid,
             fromUserId: session.fromUserId,
             fromJid: session.peerID,
-            toJid: this.sdk._personDetails.chat.jabberId
+            toJid: this.sdk._personDetails.chat.jabberId,
+            isGenerated: true
           };
           this.sessionManager.pendingSessions.push(pendingSession);
           this.sdk.emit('pendingSession', pendingSession);

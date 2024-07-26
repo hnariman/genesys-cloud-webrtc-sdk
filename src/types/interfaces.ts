@@ -861,6 +861,10 @@ export interface IConversationParticipant {
   confined: boolean;
 }
 
+export interface IExtendedPendingSession extends IPendingSession {
+  isGenerated: boolean;
+}
+
 export interface IExtendedMediaSession extends IMediaSession {
   originalRoomJid: string;
   active: boolean;

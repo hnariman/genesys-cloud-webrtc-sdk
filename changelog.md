@@ -4,6 +4,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 # [Unreleased](https://github.com/MyPureCloud/genesys-cloud-webrtc-sdk/compare/v9.1.2...HEAD)
+### Fixed
+* [STREAM-142](https://inindca.atlassian.net/browse/STREAM-142) - fix handling real proposes with auto-answer after emitting a fake pending session without auto answer
 
 # [v9.1.2](https://github.com/MyPureCloud/genesys-cloud-webrtc-sdk/compare/v9.1.1...v9.1.2)
 ### Fixed

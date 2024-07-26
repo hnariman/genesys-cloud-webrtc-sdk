@@ -2,7 +2,7 @@ import { GenesysCloudWebrtcSdk } from '../../../src/client';
 import { SessionManager } from '../../../src/sessions/session-manager';
 import { SimpleMockSdk, createPendingSession, MockSession, MockStream, MockTrack } from '../../test-utils';
 import { SessionTypes } from '../../../src/types/enums';
-import { IUpdateOutgoingMedia, IExtendedMediaSession, ISdkMediaState, VideoMediaSession } from '../../../src/types/interfaces';
+import { IUpdateOutgoingMedia, IExtendedMediaSession, ISdkMediaState, VideoMediaSession, IExtendedPendingSession } from '../../../src/types/interfaces';
 import BaseSessionHandler from '../../../src/sessions/base-session-handler';
 import SoftphoneSessionHandler from '../../../src/sessions/softphone-session-handler';
 import VideoSessionHandler from '../../../src/sessions/video-session-handler';
@@ -403,39 +403,39 @@ describe('onPropose', () => {
     expect(mockHandler.handlePropose).not.toHaveBeenCalled();
   });
 
-  it('should update session info and ignore propose if pending session already exists and sessionIds do not match', async () => {
+  it('should call handleRealProposeAfterFakePropose if existing pending session is generated', async () => {
+    const mockHandler: any = {
+      handlePropose: jest.fn(),
+      handleRealProposeAfterFakePropose: jest.fn()
+    };
+    jest.spyOn(sessionManager, 'getSessionHandler').mockReturnValue(mockHandler);
+
+    const sessionInfo = createPendingSession();
+    const existingSession = createPendingSession();
+    (existingSession as IExtendedPendingSession).isGenerated = true;
+
+    sessionManager.pendingSessions = [existingSession];
+    existingSession.conversationId = sessionInfo.conversationId
+
+    await sessionManager.onPropose(sessionInfo);
+
+    expect(mockHandler.handlePropose).not.toHaveBeenCalled();
+    expect(mockHandler.handleRealProposeAfterFakePropose).toHaveBeenCalled();
+  });
+
+  it('should ignore if pendingSession already exists and sessionIds DO match', async () => {
     const mockHandler: any = {
       handlePropose: jest.fn()
     };
     jest.spyOn(sessionManager, 'getSessionHandler').mockReturnValue(mockHandler);
 
     const sessionInfo = createPendingSession();
-    const existingSession = createPendingSession();
-    sessionManager.pendingSessions = [existingSession];
-    existingSession.conversationId = sessionInfo.conversationId
+    sessionManager.pendingSessions = [sessionInfo];
 
     await sessionManager.onPropose(sessionInfo);
 
-    expect(sessionManager.pendingSessions[0].sessionId). toEqual(sessionInfo.sessionId);
     expect(mockHandler.handlePropose).not.toHaveBeenCalled();
-    expect(mockSdk.logger.info).toHaveBeenCalledWith(
-      expect.stringContaining(`found an existingSession matching propose's conversationId, updating existingSession.sessionId to match`),
-      expect.any(Object));
-    });
-
-    it('should ignore if pendingSession already exists and sessionIds DO match', async () => {
-      const mockHandler: any = {
-        handlePropose: jest.fn()
-      };
-      jest.spyOn(sessionManager, 'getSessionHandler').mockReturnValue(mockHandler);
-
-      const sessionInfo = createPendingSession();
-      sessionManager.pendingSessions = [sessionInfo];
-
-      await sessionManager.onPropose(sessionInfo);
-
-      expect(mockHandler.handlePropose).not.toHaveBeenCalled();
-      });
+  });
 
   it('should ignore if sessionHandler is disabled', async () => {
     jest.spyOn(sessionManager, 'getPendingSession').mockReturnValue({} as any);

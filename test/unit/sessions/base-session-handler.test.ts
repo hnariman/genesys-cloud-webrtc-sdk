@@ -5,7 +5,7 @@ import { SessionTypes, SdkErrorTypes, JingleReasons } from '../../../src/types/e
 import * as mediaUtils from '../../../src/media/media-utils';
 import { SessionManager } from '../../../src/sessions/session-manager';
 import browserama from 'browserama';
-import { IExtendedMediaSession, ConversationUpdate, IAcceptSessionRequest } from '../../../src';
+import { IExtendedMediaSession, ConversationUpdate, IAcceptSessionRequest, IExtendedPendingSession, IPendingSession } from '../../../src';
 import { v4 as uuidv4 } from 'uuid';
 
 class TestableBaseSessionHandler extends BaseSessionHandler {
@@ -1066,5 +1066,11 @@ describe('applyTrackConstraints()', () => {
       }
     });
     expect(spy).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('handleRealProposeAfterFakePropose', () => {
+  it('should throw since handleRealProposeAfterFakePropose should be overridden by implementing class', async () => {
+    await expect(handler.handleRealProposeAfterFakePropose({ } as IExtendedPendingSession, { } as IPendingSession)).rejects.toThrow(/does not support converting fake proposes to real proposes/);
   });
 });

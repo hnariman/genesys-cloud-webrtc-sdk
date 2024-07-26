@@ -30,7 +30,8 @@ import {
   SdkErrorTypes,
   IPendingSession,
   JingleReasons,
-  ISessionMuteRequest
+  ISessionMuteRequest,
+  IExtendedPendingSession
 } from '../../../src';
 import { SessionManager } from '../../../src/sessions/session-manager';
 import BaseSessionHandler from '../../../src/sessions/base-session-handler';
@@ -1116,7 +1117,7 @@ describe('handleSoftphoneConversationUpdate()', () => {
 
     handler.handleSoftphoneConversationUpdate(update, participant, callState, session);
 
-    const expectedPendingSession: IPendingSession = {
+    const expectedPendingSession: IExtendedPendingSession = {
       id: session.id,
       sessionId: session.id,
       autoAnswer: callState.direction === 'outbound', // Not always accurate. If inbound auto answer, we don't know about it from convo evt
@@ -1125,7 +1126,8 @@ describe('handleSoftphoneConversationUpdate()', () => {
       originalRoomJid: session.originalRoomJid,
       fromUserId: session.fromUserId,
       fromJid: session.peerID,
-      toJid: userJid
+      toJid: userJid,
+      isGenerated: true
     }
 
     await flushPromises();
@@ -2501,4 +2503,47 @@ describe('isConversationHeld()', () => {
     handler.conversations = { 'asdfasdf': lastConversationUpdate };
     expect(handler.isConversationHeld('asdfasdf')).toBeTruthy();
   })
+});
+
+describe('handleRealProposeAfterFakePropose', () => {
+  let existing: IExtendedPendingSession;
+  let real: IPendingSession;
+  let proceedSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    existing = { ...createPendingSession(SessionTypes.softphone), isGenerated: true };
+    real = { ...existing, sessionId: '123abc', id: '123abc' };
+    proceedSpy = handler.proceedWithSession = jest.fn();
+  });
+
+  it('should update the sessionId', async () => {
+    await handler.handleRealProposeAfterFakePropose(existing, real);
+
+    expect(existing.id).toEqual('123abc');
+    expect(proceedSpy).not.toHaveBeenCalled();
+  });
+
+  it('should proceed if the existing has already been accepted', async () => {
+    existing.accepted = true;
+    await handler.handleRealProposeAfterFakePropose(existing, real);
+
+    expect(existing.id).toEqual('123abc');
+    expect(proceedSpy).toHaveBeenCalledWith(existing);
+  });
+
+  it('should cancel existing pendingSession and handle the new one', async () => {
+    const cancelSpy = mockSessionManager.onCancelPendingSession = jest.fn();
+    const proposeSpy = handler.handlePropose = jest.fn();
+    expect(mockSessionManager.pendingSessions.length).toBe(0);
+    
+    existing.autoAnswer = false;
+    real.autoAnswer = true;
+    await handler.handleRealProposeAfterFakePropose(existing, real);
+
+    expect(existing.id).toEqual('123abc');
+    expect(proceedSpy).not.toHaveBeenCalled();
+    expect(cancelSpy).toHaveBeenCalledWith('123abc', existing.conversationId);
+    expect(mockSessionManager.pendingSessions.length).toBe(1);
+    expect(proposeSpy).toHaveBeenCalled();
+  });
 });

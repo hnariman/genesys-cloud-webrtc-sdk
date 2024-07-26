@@ -4,7 +4,7 @@ import { RetryPromise } from 'genesys-cloud-streaming-client/dist/es/utils';
 
 import { GenesysCloudWebrtcSdk } from './client';
 import { SdkErrorTypes, LogLevels } from './types/enums';
-import { IPendingSession, ISessionInfo } from './types/interfaces';
+import { IExtendedPendingSession, IPendingSession, ISessionInfo } from './types/interfaces';
 import { ILogger } from 'genesys-cloud-client-logger';
 
 export class SdkError extends Error {
@@ -114,6 +114,10 @@ export const isVideoJid = function (jid: string): boolean {
 export const isPeerConnectionDisconnected = function (state: ConnectionState) {
   const disconnectedStates: ConnectionState[] = ['interrupted', 'disconnected', 'failed', 'closed'];
   return disconnectedStates.includes(state);
+}
+
+export const isExtendedPendingSession = function (s: IPendingSession): s is IExtendedPendingSession {
+  return typeof (s as IExtendedPendingSession).isGenerated !== 'undefined';
 }
 
 export const logPendingSession = function (

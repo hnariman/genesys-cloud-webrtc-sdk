@@ -17,6 +17,7 @@ import {
   IUpdateOutgoingMedia,
   IConversationHeldRequest,
   IActiveConversationDescription,
+  IExtendedPendingSession,
 } from '../types/interfaces';
 
 type ExtendedHTMLAudioElement = HTMLAudioElement & {
@@ -63,6 +64,15 @@ export default abstract class BaseSessionHandler {
   async handlePropose (pendingSession: IPendingSession): Promise<any> {
     pendingSession.sessionType = this.sessionType;
     this.sdk.emit('pendingSession', pendingSession);
+  }
+
+  async handleRealProposeAfterFakePropose (existingPendingSession: IExtendedPendingSession, realPendingSession: IPendingSession): Promise<any> {
+    const loggingParams = {
+      sessionId: realPendingSession.id,
+      conversationId: realPendingSession.conversationId,
+      sessionType: realPendingSession.sessionType
+    };
+    throw createAndEmitSdkError.call(this.sdk, SdkErrorTypes.not_supported, `sessionType: ${realPendingSession.sessionType} does not support converting fake proposes to real proposes`, loggingParams);
   }
 
   async proceedWithSession (session: IPendingSession): Promise<any> {

@@ -2,7 +2,7 @@ import { GenesysCloudWebrtcSdk } from '../client';
 import BaseSessionHandler from './base-session-handler';
 import SoftphoneSessionHandler from './softphone-session-handler';
 import { LogLevels, SessionTypes, SdkErrorTypes } from '../types/enums';
-import { createAndEmitSdkError, logPendingSession } from '../utils';
+import { createAndEmitSdkError, isExtendedPendingSession, logPendingSession } from '../utils';
 import ScreenShareSessionHandler from './screen-share-session-handler';
 import VideoSessionHandler from './video-session-handler';
 import {
@@ -280,22 +280,6 @@ export class SessionManager {
     const { conversationId, sessionType } = sessionInfo;
     const existingSession = this.getPendingSession({ conversationId, sessionType });
 
-    if (existingSession) {
-      if (existingSession.sessionId !== sessionInfo.sessionId) {
-        this.log('info', `found an existingSession matching propose's conversationId, updating existingSession.sessionId to match`,
-          { existingSessionId: existingSession.sessionId, proposeSessionId: sessionInfo.sessionId, conversationId: sessionInfo.conversationId});
-        existingSession.sessionId = sessionInfo.sessionId;
-        existingSession.id = sessionInfo.id;
-
-        if (existingSession.accepted) {
-          this.log('info', `updated existingSession was already accepted, "proceeding" again`, { sessionId: sessionInfo.sessionId, conversationId: sessionInfo.conversationId });
-          return handler.proceedWithSession(existingSession);
-        }
-      }
-      logPendingSession(this.sdk.logger, 'duplicate session invitation, ignoring', sessionInfo);
-      return;
-    }
-
     const pendingSession: IPendingSession = {
       id: sessionInfo.sessionId,
       sessionId: sessionInfo.sessionId,
@@ -307,6 +291,15 @@ export class SessionManager {
       toJid: sessionInfo.toJid,
       fromJid: sessionInfo.fromJid
     };
+
+    if (existingSession) {
+      if (isExtendedPendingSession(existingSession) && existingSession.isGenerated) {
+        return await handler.handleRealProposeAfterFakePropose(existingSession, pendingSession)
+      }
+
+      logPendingSession(this.sdk.logger, 'duplicate session invitation, ignoring', sessionInfo);
+      return;
+    }
 
     this.pendingSessions.push(pendingSession);
 
