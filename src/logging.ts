@@ -25,7 +25,7 @@ export function setupLogging (this: GenesysCloudWebrtcSdk, logger?: ILogger) {
     logLevel,
     url,
     appVersion: this.VERSION,
-    appName: 'webrtc-sdk',
+    appName: (originAppName ? `${originAppName}:` : '') + 'webrtc-sdk',
     uploadDebounceTime: 1000,
     initializeServerLogging: !(this.isGuest || optOutOfTelemetry),
     logger,

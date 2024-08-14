@@ -91,7 +91,7 @@ describe('setupLogging', () => {
       accessToken: sdkConfig.accessToken,
       url: `https://api.${sdkConfig.environment}/api/v2/diagnostics/trace`,
       logLevel: sdkConfig.logLevel,
-      appName: 'webrtc-sdk',
+      appName: 'batman:webrtc-sdk',
       appVersion: '1990',
       initializeServerLogging: false,
       logger: console,
