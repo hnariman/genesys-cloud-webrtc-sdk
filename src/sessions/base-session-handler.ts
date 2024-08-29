@@ -101,14 +101,15 @@ export default abstract class BaseSessionHandler {
       if (state === 'interrupted') {
         this.sdk.emit('sessionInterrupted', { sessionId: session.id, sessionType: session.sessionType, conversationId: session.conversationId });
       }
+
+      if (state === 'connected') {
+        this.sdk.emit('sessionConnected', session);
+      }
     });
 
     session.on('terminated', this.onSessionTerminated.bind(this, session));
 
-    if (!session.reinvite) {
-      session._emittedSessionStarteds = {[session.conversationId]: true};
-      this.sdk.emit('sessionStarted', session);
-    }
+    this.sdk.emit('sessionStarted', session);
   }
 
     /**

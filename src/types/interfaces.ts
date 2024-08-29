@@ -1011,6 +1011,7 @@ export interface SdkEvents {
   // session related stuff
   pendingSession: IPendingSession;
   sessionStarted: IExtendedMediaSession;
+  sessionConnected: IExtendedMediaSession;
   sessionEnded: (session: IExtendedMediaSession, reason: JingleReason) => void;
   sessionInterrupted: (event) => { sessionId: string, sessionType: string, conversationId: string };
   handledPendingSession: ISessionIdAndConversationId;
