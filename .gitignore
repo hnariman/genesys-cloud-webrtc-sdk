@@ -1,5 +1,5 @@
 # Node Specific Files
-/node_modules
+node_modules
 /npm-debug.log
 .npmrc
 
